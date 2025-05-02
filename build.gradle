@@ -30,7 +30,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.jsonwebtoken:jjwt-api'
-    implementation 'org.flywaydb:flyway-core'
     implementation 'org.telegram:telegrambots-spring-boot-starter'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
     compileOnly 'org.projectlombok:lombok'
