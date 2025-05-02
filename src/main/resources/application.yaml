@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: rifa-sims-server
+  datasource:
+    url: jdbc:postgresql://${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  web:
+    cors:
+      allowed-origins: "*"
+      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+  security:
+    user:
+      password:
+        encoder:
+          type: bcrypt
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}
+    username: ${TELEGRAM_BOT_USERNAME}
+    ownerId: ${TELEGRAM_OWNER_CHAT_ID}
+
+logging:
+  level:
+    io.github.irfnhanif.rifasims: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %c{1} [%p] %m%n"
+
+springdoc:
+  openapi:
+    urls:
+      - /v3/api-docs
