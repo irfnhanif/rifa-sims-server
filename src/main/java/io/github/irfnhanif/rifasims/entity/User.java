@@ -2,11 +2,14 @@ package io.github.irfnhanif.rifasims.entity;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 public class User {
 
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private String username;
@@ -20,11 +23,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
