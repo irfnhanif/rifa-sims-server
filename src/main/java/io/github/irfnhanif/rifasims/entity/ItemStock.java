@@ -11,9 +11,9 @@ public class ItemStock {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @OneToOne ToOne
     @JoinColumn(name = "item_id")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Item item;
 
     @Column(nullable = false)
