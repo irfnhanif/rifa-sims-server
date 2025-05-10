@@ -18,7 +18,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String branch;
+    private Integer branch;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
@@ -47,11 +47,11 @@ public class User {
         this.password = password;
     }
 
-    public String getBranch() {
+    public Integer getBranch() {
         return branch;
     }
 
-    public void setBranch(String branch) {
+    public void setBranch(Integer branch) {
         this.branch = branch;
     }
 
