@@ -11,9 +11,8 @@ public class ItemStock {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne ToOne
-    @JoinColumn(name = "item_id")
-    @Column(nullable = false, unique = true)
+    @OneToOne
+    @JoinColumn(name = "item_id", nullable = false, unique = true)
     private Item item;
 
     @Column(nullable = false)
