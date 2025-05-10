@@ -2,9 +2,13 @@ package io.github.irfnhanif.rifasims.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
+@Table(indexes = {
+        @Index(name = "idx_item_barcode", columnList = "barcode")
+})
 public class Item {
 
     @Id
@@ -14,10 +18,13 @@ public class Item {
     @Column(nullable = false)
     private String name;
 
-    @Column(unique = true)
+    @Column(nullable = false)
     private String barcode;
 
     private String description;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal price;
 
     public UUID getId() {
         return id;
@@ -49,5 +56,13 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }
