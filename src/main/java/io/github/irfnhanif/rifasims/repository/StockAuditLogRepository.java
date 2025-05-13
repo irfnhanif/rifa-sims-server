@@ -13,4 +13,6 @@ public interface StockAuditLogRepository  extends JpaRepository<StockAuditLog, U
     List<StockAuditLog> findByItem(Item item);
     List<StockAuditLog> findByUser(User user);
     List<StockAuditLog> findByTimestampBetween(LocalDateTime start, LocalDateTime end);
+
+    List<StockAuditLog> findAllByItem(Item item);
 }
