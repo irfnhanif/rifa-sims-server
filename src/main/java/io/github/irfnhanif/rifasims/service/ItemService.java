@@ -75,6 +75,5 @@ public class ItemService {
             throw new ResourceNotFoundException("Item not found");
         }
         itemRepository.delete(itemOptional.get());
-        return true;
     }
 }
