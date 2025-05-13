@@ -1,6 +1,9 @@
 package io.github.irfnhanif.rifasims.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -16,15 +19,17 @@ public class Item {
     private UUID id;
 
     @Column(nullable = false)
+    @NotNull
+    @NotBlank
     private String name;
 
     @Column(nullable = false)
+    @NotNull
+    @NotBlank
+    @Pattern(regexp = "^[0-9A-Z\\-]{4,30}$", message = "Barcode must be 4-30 characters and contain only digits, uppercase letters, and hyphens")
     private String barcode;
 
     private String description;
-
-    @Column(precision = 19, scale = 2)
-    private BigDecimal price;
 
     public UUID getId() {
         return id;
@@ -56,13 +61,5 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
     }
 }
