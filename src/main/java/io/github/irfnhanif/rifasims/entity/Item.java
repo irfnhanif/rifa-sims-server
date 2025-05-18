@@ -1,5 +1,6 @@
 package io.github.irfnhanif.rifasims.entity;
 
+import io.github.irfnhanif.rifasims.validation.MustBeString;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +22,7 @@ public class Item {
     @Column(nullable = false)
     @NotNull
     @NotBlank
+    @MustBeString
     private String name;
 
     @Column(nullable = false)
