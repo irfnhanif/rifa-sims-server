@@ -2,6 +2,7 @@ package io.github.irfnhanif.rifasims.controller;
 
 import io.github.irfnhanif.rifasims.dto.APIResponse;
 import io.github.irfnhanif.rifasims.entity.Item;
+import io.github.irfnhanif.rifasims.entity.StockAuditLog;
 import io.github.irfnhanif.rifasims.entity.StockChangeType;
 import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.InternalServerException;
@@ -9,7 +10,6 @@ import io.github.irfnhanif.rifasims.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -57,23 +57,24 @@ public class ItemController {
             Item item = itemService.getItemById(itemId);
             return ResponseEntity.ok(new APIResponse<>(true, "Item retrieved successfully", item, null));
         } catch (Exception e) {
-            throw new InternalServerException("Internal server error", e.getMessage());
+            throw new InternalServerException(e.getMessage());
         }
     }
 
     @GetMapping("/{itemId}/history")
-    public ResponseEntity<List<Item>> getItemHistory(@PathVariable UUID itemId,
-                                                     @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate,
-                                                     @RequestParam(required = false) StockChangeType type) {
+    public ResponseEntity<APIResponse<List<StockAuditLog>>> getItemHistory(@PathVariable UUID itemId,
+                                                                           @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate,
+                                                                           @RequestParam(required = false) StockChangeType type) {
         try {
-
+            List<StockAuditLog> itemStockHistory = itemService.getStockAuditLogsByItemId(itemId);
+            return ResponseEntity.ok(new APIResponse<>(true, "Stock History retrieved successfully", itemStockHistory, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
     @GetMapping("/barcode/{barcode}")
-    public ResponseEntity<APIResponse<List<Item>>> getItemByBarcode(@RequestParam String barcode) {
+    public ResponseEntity<APIResponse<List<Item>>> getItemByBarcode(@PathVariable String barcode) {
         try {
             if (barcode == null || barcode.isEmpty()) {
                 throw new BadRequestException("Barcode cannot be empty");
@@ -90,7 +91,7 @@ public class ItemController {
     @PutMapping("/{itemId}")
     public ResponseEntity<APIResponse<Item>> updateItem(@PathVariable UUID itemId, @Valid @RequestBody Item item) {
         try {
-            Item updatedItem = itemService.updateItem(item);
+            Item updatedItem = itemService.updateItem(itemId, item);
             return ResponseEntity.ok(new APIResponse<>(true, "Item updated successfully", updatedItem, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
