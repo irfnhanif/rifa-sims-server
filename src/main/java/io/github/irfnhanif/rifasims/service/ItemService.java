@@ -55,16 +55,15 @@ public class ItemService {
 
 
     public Item createItem(Item item) {
-        item.setId(UUID.randomUUID());
         return itemRepository.save(item);
     }
 
-    public Item updateItem(Item item) {
-        Optional<Item> itemOptional = itemRepository.findById(item.getId());
+    public Item updateItem(UUID itemId, Item item) {
+        Optional<Item> itemOptional = itemRepository.findById(itemId);
         if (!itemOptional.isPresent()) {
             throw new ResourceNotFoundException("Item not found");
         }
-        item.setId(item.getId());
+        item.setId(itemId);
         itemRepository.save(item);
         return item;
     }
