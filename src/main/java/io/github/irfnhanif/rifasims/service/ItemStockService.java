@@ -2,12 +2,14 @@ package io.github.irfnhanif.rifasims.service;
 
 import io.github.irfnhanif.rifasims.dto.StockScanRequest;
 import io.github.irfnhanif.rifasims.entity.ItemStock;
+import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemStockRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,7 +33,11 @@ public class ItemStockService {
     }
 
     public ItemStock getItemStockById(UUID itemStockId) {
-
+        Optional<ItemStock> itemStock = itemStockRepository.findById(itemStockId);
+        if (!itemStock.isPresent()) {
+            throw new ResourceNotFoundException("Item stock not found");
+        }
+        return itemStock.get();
     }
 
     public ItemStock saveItemStockChange(ItemStock itemStock) {

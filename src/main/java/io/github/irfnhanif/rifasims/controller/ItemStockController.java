@@ -33,8 +33,13 @@ public class ItemStockController {
     }
 
     @GetMapping("/{itemStockId}")
-    public ItemStock getItemStock(@PathVariable UUID itemStockId) {
-
+    public APIResponse<ItemStock> getItemStock(@PathVariable UUID itemStockId) {
+        try {
+            ItemStock itemStock = itemStockService.getItemStockById(itemStockId);
+            return new APIResponse<>(true, "Item stock retrieved successfully", itemStock, null);
+        } catch (Exception e) {
+            throw new InternalServerException(e.getMessage());
+        }
     }
 
     @PostMapping("")
