@@ -40,6 +40,10 @@ public class ItemStockService {
         return itemStock.get();
     }
 
+    public ItemStock createItemStock(ItemStock itemStock) {
+        return itemStockRepository.save(itemStock);
+    }
+
     public ItemStock saveItemStockChange(ItemStock itemStock) {
 
     }

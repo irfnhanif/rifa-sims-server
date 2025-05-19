@@ -43,8 +43,13 @@ public class ItemStockController {
     }
 
     @PostMapping("")
-    public ItemStock addItemStock(@RequestBody ItemStock itemStock) {
-
+    public APIResponse<ItemStock> addItemStock(@RequestBody ItemStock itemStock) {
+        try {
+            ItemStock addedItemStock = itemStockService.createItemStock(itemStock);
+            return new APIResponse<>(true, "Item stock added successfully", addedItemStock, null);
+        } catch (Exception e) {
+            throw new InternalServerException(e.getMessage());
+        }
     }
 
     @PutMapping("/{itemStockId}")
