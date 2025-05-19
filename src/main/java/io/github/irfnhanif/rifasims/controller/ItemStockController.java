@@ -53,8 +53,13 @@ public class ItemStockController {
     }
 
     @PutMapping("/{itemStockId}")
-    public ItemStock updateItemStock(@PathVariable UUID itemStockId, @RequestBody ItemStock itemStock) {
-
+    public APIResponse<ItemStock> updateItemStock(@PathVariable UUID itemStockId, @RequestBody ItemStock itemStock) {
+        try {
+            ItemStock updatedItemStock = itemStockService.updateItemStockChange(itemStockId, itemStock);
+            return new APIResponse<>(true, "Item stock updated successfully", updatedItemStock, null);
+        } catch (Exception e) {
+            throw new InternalServerException(e.getMessage());
+        }
     }
 
     @PutMapping("/{itemStockId}/scan")
@@ -63,7 +68,12 @@ public class ItemStockController {
     }
 
     @DeleteMapping("/{itemStockId}")
-    public void deleteItemStock(@PathVariable UUID itemStockId) {
-
+    public APIResponse<Void> deleteItemStock(@PathVariable UUID itemStockId) {
+        try {
+            itemStockService.deleteItemStockChange(itemStockId);
+            return new APIResponse<>(true, "Item deleted successfully", null, null);
+        } catch (Exception e) {
+            throw new InternalServerException(e.getMessage());
+        }
     }
 }

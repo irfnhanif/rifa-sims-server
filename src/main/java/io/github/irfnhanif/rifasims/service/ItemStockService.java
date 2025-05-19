@@ -49,14 +49,24 @@ public class ItemStockService {
     }
 
     public ItemStock updateItemStockChange(UUID itemStockId, ItemStock itemStock) {
-
+        Optional<ItemStock> itemStockOptional = itemStockRepository.findById(itemStockId);
+        if (!itemStockOptional.isPresent()) {
+            throw new ResourceNotFoundException("Item stock not found");
+        }
+        itemStock.setId(itemStockId);
+        itemStockRepository.save(itemStock);
+        return itemStock;
     }
 
     public ItemStock updateScanItemStockChange(UUID itemStockId, StockScanRequest stockScanRequest) {
 
     }
 
-    public void deleteItemStockChange(ItemStock itemStock) {
-
+    public void deleteItemStockChange(UUID itemStockId) {
+        Optional<ItemStock> itemStockOptional = itemStockRepository.findById(itemStockId);
+        if (!itemStockOptional.isPresent()) {
+            throw new ResourceNotFoundException("Item stock not found");
+        }
+        itemStockRepository.delete(itemStockOptional.get());
     }
 }
