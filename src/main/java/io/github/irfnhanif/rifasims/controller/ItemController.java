@@ -1,6 +1,8 @@
 package io.github.irfnhanif.rifasims.controller;
 
 import io.github.irfnhanif.rifasims.dto.APIResponse;
+import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
+import io.github.irfnhanif.rifasims.dto.CreateItemRequest;
 import io.github.irfnhanif.rifasims.entity.Item;
 import io.github.irfnhanif.rifasims.entity.StockAuditLog;
 import io.github.irfnhanif.rifasims.entity.StockChangeType;
@@ -28,9 +30,9 @@ public class ItemController {
 
 //    @PreAuthorize("hasRole('OWNER')")
     @PostMapping("")
-    public ResponseEntity<APIResponse<Item>> createItem(@Valid  @RequestBody Item item) {
+    public ResponseEntity<APIResponse<Item>> createItem(@Valid  @RequestBody CreateItemRequest createItemRequest) {
         try {
-            Item createdItem = itemService.createItem(item);
+            Item createdItem = itemService.createItem(createItemRequest);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(new APIResponse<>(true, "Item created successfully", createdItem, null));
@@ -74,14 +76,14 @@ public class ItemController {
     }
 
     @GetMapping("/barcode/{barcode}")
-    public ResponseEntity<APIResponse<List<Item>>> getItemByBarcode(@PathVariable String barcode) {
+    public ResponseEntity<APIResponse<List<BarcodeScanResponse>>> getItemByBarcode(@PathVariable String barcode) {
         try {
             if (barcode == null || barcode.isEmpty()) {
                 throw new BadRequestException("Barcode cannot be empty");
             }
 
-            List<Item> items = itemService.getItemsByBarcode(barcode);
-            return ResponseEntity.ok(new APIResponse<>(true, "Items retrieved successfully", items, null));
+            List<BarcodeScanResponse> responses = itemService.getItemsByBarcode(barcode);
+            return ResponseEntity.ok(new APIResponse<>(true, "Items retrieved successfully", responses, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }

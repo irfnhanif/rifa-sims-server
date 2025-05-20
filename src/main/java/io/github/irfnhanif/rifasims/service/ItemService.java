@@ -1,9 +1,13 @@
 package io.github.irfnhanif.rifasims.service;
 
+import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
+import io.github.irfnhanif.rifasims.dto.CreateItemRequest;
 import io.github.irfnhanif.rifasims.entity.Item;
+import io.github.irfnhanif.rifasims.entity.ItemStock;
 import io.github.irfnhanif.rifasims.entity.StockAuditLog;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemRepository;
+import io.github.irfnhanif.rifasims.repository.ItemStockRepository;
 import io.github.irfnhanif.rifasims.repository.StockAuditLogRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +21,17 @@ import java.util.UUID;
 @Service
 public class ItemService {
 
+    private final ItemStockRepository itemStockRepository;
     private ItemRepository itemRepository;
     private StockAuditLogRepository stockAuditLogRepository;
+    private ItemStockService itemStockService;
 
-    public ItemService(ItemRepository itemRepository, StockAuditLogRepository stockAuditLogRepository) {
+
+    public ItemService(ItemRepository itemRepository, StockAuditLogRepository stockAuditLogRepository, ItemStockService itemStockService, ItemStockRepository itemStockRepository) {
         this.itemRepository = itemRepository;
         this.stockAuditLogRepository = stockAuditLogRepository;
+        this.itemStockService = itemStockService;
+        this.itemStockRepository = itemStockRepository;
     }
 
     public List<Item> getAllItems(String name, Integer page, Integer size) {
@@ -33,8 +42,9 @@ public class ItemService {
         return itemRepository.findAll(pageable).getContent();
     }
 
-    public List<Item> getItemsByBarcode(String barcode) {
-        return itemRepository.findByBarcode(barcode);
+    public List<BarcodeScanResponse> getItemsByBarcode(String barcode) {
+        List<BarcodeScanResponse> responses = itemStockRepository.findItemStocksByBarcode(barcode);
+        return responses;
     }
 
     public List<StockAuditLog> getStockAuditLogsByItemId(UUID itemId) {
@@ -54,8 +64,18 @@ public class ItemService {
     }
 
 
-    public Item createItem(Item item) {
-        return itemRepository.save(item);
+    public Item createItem(CreateItemRequest createItemRequest) {
+        Item item = new Item();
+        item.setName(createItemRequest.getName());
+        item.setBarcode(createItemRequest.getBarcode());
+        item.setDescription(createItemRequest.getDescription());
+        Item savedItem = itemRepository.save(item);
+        ItemStock itemStock = new ItemStock();
+        itemStock.setItem(savedItem);
+        itemStock.setCurrentStock(createItemRequest.getCurrentStock());
+        itemStock.setThreshold(createItemRequest.getThreshold());
+        itemStockService.createItemStock(itemStock);
+        return savedItem;
     }
 
     public Item updateItem(UUID itemId, Item item) {
