@@ -2,6 +2,7 @@ package io.github.irfnhanif.rifasims.repository;
 
 import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.entity.UserRole;
+import io.github.irfnhanif.rifasims.entity.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,4 +13,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String username);
     List<User> findByBranch(Integer branch);
     List<User> findByRole(UserRole role);
+    List<User> findByStatus(UserStatus status);
 }
