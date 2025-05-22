@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
+@PreAuthorize("hasAuthority('OWNER')")
 public class UserController {
 
     private final UserService userService;
