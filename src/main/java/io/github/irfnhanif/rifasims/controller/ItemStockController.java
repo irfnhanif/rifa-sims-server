@@ -5,6 +5,7 @@ import io.github.irfnhanif.rifasims.dto.StockChangeRequest;
 import io.github.irfnhanif.rifasims.entity.ItemStock;
 import io.github.irfnhanif.rifasims.exception.InternalServerException;
 import io.github.irfnhanif.rifasims.service.ItemStockService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,60 +23,60 @@ public class ItemStockController {
     }
 
     @GetMapping("")
-    public APIResponse<List<ItemStock>> getItemStocks(@RequestParam(required = false) String name, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
+    public ResponseEntity<APIResponse<List<ItemStock>>> getItemStocks(@RequestParam(required = false) String name, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
         try {
             List<ItemStock> itemStocks = itemStockService.getAllItemStocks(name, page, size);
-            return new APIResponse<>(true, "Item stocks retrieved successfully", itemStocks, null);
+            return ResponseEntity.ok(new APIResponse<>(true, "Item stocks retrieved successfully", itemStocks, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
     @GetMapping("/near-empty")
-    public APIResponse<List<ItemStock>> getItemStocksLessThanThreshold(@RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
+    public ResponseEntity<APIResponse<List<ItemStock>>> getItemStocksLessThanThreshold(@RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
         try {
             List<ItemStock> itemStocks = itemStockService.getItemStocksLessThanThreshold(page, size);
-            return new APIResponse<>(true, "Near-empty item stocks retrieved successfully", itemStocks, null);
+            return ResponseEntity.ok(new APIResponse<>(true, "Near-empty item stocks retrieved successfully", itemStocks, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
     @GetMapping("/{itemStockId}")
-    public APIResponse<ItemStock> getItemStock(@PathVariable UUID itemStockId) {
+    public ResponseEntity<APIResponse<ItemStock>> getItemStock(@PathVariable UUID itemStockId) {
         try {
             ItemStock itemStock = itemStockService.getItemStockById(itemStockId);
-            return new APIResponse<>(true, "Item stock retrieved successfully", itemStock, null);
+            return ResponseEntity.ok(new APIResponse<>(true, "Item stock retrieved successfully", itemStock, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
     @PutMapping("/{itemStockId}")
-    public APIResponse<ItemStock> updateItemStock(@PathVariable UUID itemStockId, @RequestBody ItemStock itemStock) {
+    public ResponseEntity<APIResponse<ItemStock>> updateItemStock(@PathVariable UUID itemStockId, @RequestBody ItemStock itemStock) {
         try {
             ItemStock updatedItemStock = itemStockService.updateItemStockChange(itemStockId, itemStock);
-            return new APIResponse<>(true, "Item stock updated successfully", updatedItemStock, null);
+            return ResponseEntity.ok(new APIResponse<>(true, "Item stock updated successfully", updatedItemStock, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
     @PatchMapping("/{itemStockId}/scan")
-    public APIResponse<ItemStock> scanItemStock(@PathVariable UUID itemStockId, @RequestBody StockChangeRequest stockChangeRequest) {
+    public ResponseEntity<APIResponse<ItemStock>> scanItemStock(@PathVariable UUID itemStockId, @RequestBody StockChangeRequest stockChangeRequest) {
         try {
             ItemStock scannedItemStock = itemStockService.updateScanItemStockChange(itemStockId, stockChangeRequest);
-            return new APIResponse<>(true, "Item stock scanned successfully", scannedItemStock, null);
+            return ResponseEntity.ok(new APIResponse<>(true, "Item stock scanned successfully", scannedItemStock, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
     @DeleteMapping("/{itemStockId}")
-    public APIResponse<Void> deleteItemStock(@PathVariable UUID itemStockId) {
+    public ResponseEntity<APIResponse<Void>> deleteItemStock(@PathVariable UUID itemStockId) {
         try {
             itemStockService.deleteItemStockChange(itemStockId);
-            return new APIResponse<>(true, "Item deleted successfully", null, null);
+            return ResponseEntity.ok(new APIResponse<>(true, "Item deleted successfully", null, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
