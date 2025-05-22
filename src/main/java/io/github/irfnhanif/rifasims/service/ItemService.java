@@ -2,9 +2,7 @@ package io.github.irfnhanif.rifasims.service;
 
 import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.CreateItemRequest;
-import io.github.irfnhanif.rifasims.entity.Item;
-import io.github.irfnhanif.rifasims.entity.ItemStock;
-import io.github.irfnhanif.rifasims.entity.StockAuditLog;
+import io.github.irfnhanif.rifasims.entity.*;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemRepository;
 import io.github.irfnhanif.rifasims.repository.ItemStockRepository;
@@ -13,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -103,5 +102,17 @@ public class ItemService {
         itemStock.setCurrentStock(currentStock);
         itemStock.setThreshold(threshold);
         return itemStock;
+    }
+
+    private StockAuditLog createLog(Item item, User user, StockChangeType type, int oldStock, int newStock, String reason, LocalDateTime timestamp) {
+        StockAuditLog stockAuditLog = new StockAuditLog();
+        stockAuditLog.setItem(item);
+        stockAuditLog.setUser(user);
+        stockAuditLog.setType(type);
+        stockAuditLog.setOldStock(oldStock);
+        stockAuditLog.setNewStock(newStock);
+        stockAuditLog.setReason(reason);
+        stockAuditLog.setTimestamp(timestamp);
+        return stockAuditLog;
     }
 }
