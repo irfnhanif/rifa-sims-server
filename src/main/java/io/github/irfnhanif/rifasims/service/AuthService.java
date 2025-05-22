@@ -5,7 +5,6 @@ import io.github.irfnhanif.rifasims.entity.UserRole;
 import io.github.irfnhanif.rifasims.entity.UserStatus;
 import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.InvalidCredentialsException;
-import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
 import io.github.irfnhanif.rifasims.util.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
