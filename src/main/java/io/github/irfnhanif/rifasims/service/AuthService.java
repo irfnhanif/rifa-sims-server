@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.lang.module.ResolutionException;
 
 @Service
 public class AuthService {
@@ -44,13 +44,14 @@ public class AuthService {
 
     public String login(String username, String password) {
         try {
-            Optional<User> user = userRepository.findByUsername(username);
-            if (user.get().getStatus() == UserStatus.PENDING) {
-                throw new InvalidCredentialsException("Wait for owner approval");
-            }
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new ResolutionException("User not found"));
+            if (user.getStatus() == UserStatus.PENDING) {
+                throw new InvalidCredentialsException("Wait for owner approval");
+            }
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             return jwtUtil.generateToken(userDetails);

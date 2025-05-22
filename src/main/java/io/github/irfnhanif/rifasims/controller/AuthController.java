@@ -40,7 +40,4 @@ public class AuthController {
             throw new InternalServerErrorException(e.getMessage());
         }
     }
-
-//    @PostMapping("/refresh-token")
-//
 }
