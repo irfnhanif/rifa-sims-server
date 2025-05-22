@@ -63,17 +63,10 @@ public class ItemService {
         return item.get();
     }
 
-
     public Item createItem(CreateItemRequest createItemRequest) {
-        Item item = new Item();
-        item.setName(createItemRequest.getName());
-        item.setBarcode(createItemRequest.getBarcode());
-        item.setDescription(createItemRequest.getDescription());
+        Item item = createNewItem(createItemRequest.getName(), createItemRequest.getBarcode(), createItemRequest.getDescription());
         Item savedItem = itemRepository.save(item);
-        ItemStock itemStock = new ItemStock();
-        itemStock.setItem(savedItem);
-        itemStock.setCurrentStock(createItemRequest.getCurrentStock());
-        itemStock.setThreshold(createItemRequest.getThreshold());
+        ItemStock itemStock = createNewItemStock(savedItem, createItemRequest.getCurrentStock(), createItemRequest.getThreshold());
         itemStockService.createItemStock(itemStock);
         return savedItem;
     }
@@ -94,5 +87,21 @@ public class ItemService {
             throw new ResourceNotFoundException("Item not found");
         }
         itemRepository.delete(itemOptional.get());
+    }
+
+    private Item createNewItem(String itemName, String itemBarcode, String itemDescription) {
+        Item item = new Item();
+        item.setName(itemName);
+        item.setBarcode(itemBarcode);
+        item.setDescription(itemDescription);
+        return item;
+    }
+
+    private ItemStock createNewItemStock(Item item, Integer currentStock, Integer threshold) {
+        ItemStock itemStock = new ItemStock();
+        itemStock.setItem(item);
+        itemStock.setCurrentStock(currentStock);
+        itemStock.setThreshold(threshold);
+        return itemStock;
     }
 }
