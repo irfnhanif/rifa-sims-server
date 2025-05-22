@@ -26,6 +26,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<APIResponse<Void>> handleInvalidCredentialsException(InvalidCredentialsException e) {
+        APIResponse<Void> response = new APIResponse<>(false, e.getMessage(), null, Collections.singletonList(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
     @ExceptionHandler(InternalServerException.class)
     public ResponseEntity<APIResponse<Void>> handleInternalServerException(InternalServerException e) {
         APIResponse<Void> response = new APIResponse<>(false, e.getMessage(), null, Collections.singletonList(e.getMessage()));
