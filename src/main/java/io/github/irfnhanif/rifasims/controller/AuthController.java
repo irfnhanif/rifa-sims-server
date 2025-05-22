@@ -25,7 +25,7 @@ public class AuthController {
         try {
             User registeredUser = authService.register(user);
             String registerMessage = String.format("Registered user: %s", registeredUser.getUsername());
-            return new APIResponse<>(true, "Register successfully, Please wait confirmation from owner", registerMessage, null)
+            return new APIResponse<>(true, "Register successfully, Please wait confirmation from owner", registerMessage, null);
         } catch (Exception e) {
             throw new InternalServerErrorException(e.getMessage());
         }
