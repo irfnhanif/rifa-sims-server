@@ -1,6 +1,7 @@
 package io.github.irfnhanif.rifasims.controller;
 
 import io.github.irfnhanif.rifasims.dto.APIResponse;
+import io.github.irfnhanif.rifasims.dto.RegisterRequest;
 import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.service.AuthService;
 import jakarta.validation.Valid;
@@ -23,9 +24,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<APIResponse<String>> register(@Valid @RequestBody User user) {
+    public ResponseEntity<APIResponse<String>> register(@Valid @RequestBody RegisterRequest registerRequest) {
         try {
-            User registeredUser = authService.register(user);
+            User registeredUser = authService.register(registerRequest);
             String registerMessage = String.format("Registered user: %s", registeredUser.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(true, "Register successfully, Please wait confirmation from owner", registerMessage, null));
         } catch (Exception e) {
