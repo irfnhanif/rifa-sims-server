@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import java.util.UUID;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
