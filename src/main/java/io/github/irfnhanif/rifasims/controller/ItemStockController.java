@@ -1,7 +1,8 @@
 package io.github.irfnhanif.rifasims.controller;
 
 import io.github.irfnhanif.rifasims.dto.APIResponse;
-import io.github.irfnhanif.rifasims.dto.StockChangeRequest;
+import io.github.irfnhanif.rifasims.dto.EditStockChangeRequest;
+import io.github.irfnhanif.rifasims.dto.ScanStockChangeRequest;
 import io.github.irfnhanif.rifasims.entity.ItemStock;
 import io.github.irfnhanif.rifasims.exception.InternalServerException;
 import io.github.irfnhanif.rifasims.service.ItemStockService;
@@ -53,9 +54,9 @@ public class ItemStockController {
     }
 
     @PutMapping("/{itemStockId}")
-    public ResponseEntity<APIResponse<ItemStock>> updateItemStock(@PathVariable UUID itemStockId, @RequestBody ItemStock itemStock) {
+    public ResponseEntity<APIResponse<ItemStock>> updateItemStock(@PathVariable UUID itemStockId, @RequestBody EditStockChangeRequest editStockChangeRequest) {
         try {
-            ItemStock updatedItemStock = itemStockService.updateItemStockChange(itemStockId, itemStock);
+            ItemStock updatedItemStock = itemStockService.updateItemStockChange(itemStockId, editStockChangeRequest);
             return ResponseEntity.ok(new APIResponse<>(true, "Item stock updated successfully", updatedItemStock, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
@@ -63,9 +64,9 @@ public class ItemStockController {
     }
 
     @PatchMapping("/{itemStockId}/scan")
-    public ResponseEntity<APIResponse<ItemStock>> scanItemStock(@PathVariable UUID itemStockId, @RequestBody StockChangeRequest stockChangeRequest) {
+    public ResponseEntity<APIResponse<ItemStock>> scanItemStock(@PathVariable UUID itemStockId, @RequestBody ScanStockChangeRequest scanStockChangeRequest) {
         try {
-            ItemStock scannedItemStock = itemStockService.updateScanItemStockChange(itemStockId, stockChangeRequest);
+            ItemStock scannedItemStock = itemStockService.updateScanItemStockChange(itemStockId, scanStockChangeRequest);
             return ResponseEntity.ok(new APIResponse<>(true, "Item stock scanned successfully", scannedItemStock, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
