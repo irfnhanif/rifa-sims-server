@@ -2,7 +2,7 @@ package io.github.irfnhanif.rifasims.dto;
 
 import io.github.irfnhanif.rifasims.entity.StockChangeType;
 
-public class StockChangeRequest {
+public class ScanStockChangeRequest {
     private StockChangeType changeType;
     private Integer amount;
 

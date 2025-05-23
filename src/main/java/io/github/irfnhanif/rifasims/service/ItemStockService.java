@@ -1,14 +1,19 @@
 package io.github.irfnhanif.rifasims.service;
 
-import io.github.irfnhanif.rifasims.dto.StockChangeRequest;
-import io.github.irfnhanif.rifasims.entity.ItemStock;
-import io.github.irfnhanif.rifasims.entity.StockChangeType;
+import io.github.irfnhanif.rifasims.dto.EditStockChangeRequest;
+import io.github.irfnhanif.rifasims.dto.ScanStockChangeRequest;
+import io.github.irfnhanif.rifasims.entity.*;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemStockRepository;
+import io.github.irfnhanif.rifasims.repository.StockAuditLogRepository;
+import io.github.irfnhanif.rifasims.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,8 +22,12 @@ import java.util.UUID;
 public class ItemStockService {
 
     private final ItemStockRepository itemStockRepository;
-    public ItemStockService(ItemStockRepository itemStockRepository) {
+    private final UserRepository userRepository;
+    private final StockAuditLogService stockAuditLogService;
+    public ItemStockService(ItemStockRepository itemStockRepository, UserRepository userRepository, StockAuditLogService stockAuditLogService) {
         this.itemStockRepository = itemStockRepository;
+        this.userRepository = userRepository;
+        this.stockAuditLogService = stockAuditLogService;
     }
 
     public List<ItemStock> getAllItemStocks(String name, Integer page, Integer size) {
@@ -35,11 +44,7 @@ public class ItemStockService {
     }
 
     public ItemStock getItemStockById(UUID itemStockId) {
-        Optional<ItemStock> itemStock = itemStockRepository.findById(itemStockId);
-        if (!itemStock.isPresent()) {
-            throw new ResourceNotFoundException("Item stock not found");
-        }
-        return itemStock.get();
+        return itemStockRepository.findById(itemStockId).orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
     }
 
     public ItemStock createItemStock(ItemStock itemStock) {
@@ -47,36 +52,66 @@ public class ItemStockService {
     }
 
 
-    public ItemStock updateItemStockChange(UUID itemStockId, ItemStock itemStock) {
-        Optional<ItemStock> itemStockOptional = itemStockRepository.findById(itemStockId);
-        if (!itemStockOptional.isPresent()) {
-            throw new ResourceNotFoundException("Item stock not found");
-        }
-        itemStock.setId(itemStockId);
-        itemStockRepository.save(itemStock);
-        return itemStock;
+    public ItemStock updateItemStockChange(UUID itemStockId, EditStockChangeRequest editStockChangeRequest) {
+        ItemStock existingItemStock = itemStockRepository.findById(itemStockId)
+                .orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
+
+        Integer oldStock = existingItemStock.getCurrentStock();
+
+        existingItemStock.setCurrentStock(editStockChangeRequest.getCurrentStock());
+        existingItemStock.setThreshold(editStockChangeRequest.getThreshold());
+        itemStockRepository.save(existingItemStock);
+
+        stockAuditLogService.recordStockChange(
+                existingItemStock.getItem(),
+                getCurrentUser(),
+                StockChangeType.MANUAL_EDIT,
+                oldStock,
+                editStockChangeRequest.getCurrentStock(),
+                editStockChangeRequest.getReason(),
+                LocalDateTime.now()
+        );
+
+        return existingItemStock;
     }
 
-    public ItemStock updateScanItemStockChange(UUID itemStockId, StockChangeRequest stockChangeRequest) {
-        Optional<ItemStock> itemStockOptional = itemStockRepository.findById(itemStockId);
-        if (!itemStockOptional.isPresent()) {
-            throw new ResourceNotFoundException("Item stock not found");
-        }
-        ItemStock itemStock = itemStockOptional.get();
-        if (stockChangeRequest.getChangeType() == StockChangeType.OUT) {
-            itemStock.setCurrentStock(itemStock.getCurrentStock() - stockChangeRequest.getAmount());
+    public ItemStock updateScanItemStockChange(UUID itemStockId, ScanStockChangeRequest scanStockChangeRequest) {
+        ItemStock itemStock = itemStockRepository.findById(itemStockId).orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
+
+        Integer oldStock = itemStock.getCurrentStock();
+        Integer newStock = 0;
+
+        if (scanStockChangeRequest.getChangeType() == StockChangeType.OUT) {
+            newStock = itemStock.getCurrentStock() - scanStockChangeRequest.getAmount();
         } else {
-            itemStock.setCurrentStock(itemStock.getCurrentStock() + stockChangeRequest.getAmount());
+            newStock = itemStock.getCurrentStock() + scanStockChangeRequest.getAmount();
         }
+
+        itemStock.setCurrentStock(newStock);
         itemStockRepository.save(itemStock);
+
+        stockAuditLogService.recordStockChange(
+                itemStock.getItem(),
+                getCurrentUser(),
+                scanStockChangeRequest.getChangeType(),
+                oldStock,
+                newStock,
+                null,
+                LocalDateTime.now()
+        );
+
         return itemStock;
     }
 
     public void deleteItemStockChange(UUID itemStockId) {
-        Optional<ItemStock> itemStockOptional = itemStockRepository.findById(itemStockId);
-        if (!itemStockOptional.isPresent()) {
-            throw new ResourceNotFoundException("Item stock not found");
-        }
-        itemStockRepository.delete(itemStockOptional.get());
+        ItemStock itemStock = itemStockRepository.findById(itemStockId).orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
+        itemStockRepository.delete(itemStock);
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

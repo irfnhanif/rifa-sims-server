@@ -16,7 +16,7 @@ public class ItemStock {
     private Item item;
 
     @Column(nullable = false)
-    private int currentStock;
+    private Integer currentStock;
 
     private Integer threshold;
 
@@ -36,11 +36,11 @@ public class ItemStock {
         this.item = item;
     }
 
-    public int getCurrentStock() {
+    public Integer getCurrentStock() {
         return currentStock;
     }
 
-    public void setCurrentStock(int currentStock) {
+    public void setCurrentStock(Integer currentStock) {
         this.currentStock = currentStock;
     }
 
