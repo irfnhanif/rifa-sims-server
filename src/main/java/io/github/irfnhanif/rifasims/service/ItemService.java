@@ -104,15 +104,5 @@ public class ItemService {
         return itemStock;
     }
 
-    private StockAuditLog createLog(Item item, User user, StockChangeType type, int oldStock, int newStock, String reason, LocalDateTime timestamp) {
-        StockAuditLog stockAuditLog = new StockAuditLog();
-        stockAuditLog.setItem(item);
-        stockAuditLog.setUser(user);
-        stockAuditLog.setType(type);
-        stockAuditLog.setOldStock(oldStock);
-        stockAuditLog.setNewStock(newStock);
-        stockAuditLog.setReason(reason);
-        stockAuditLog.setTimestamp(timestamp);
-        return stockAuditLog;
-    }
+
 }
