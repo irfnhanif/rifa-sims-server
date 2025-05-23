@@ -49,11 +49,7 @@ public class StockAuditLogService {
     }
 
     public StockAuditLog getStockAuditLogById(UUID stockAuditLogId) {
-        Optional<StockAuditLog> stockAuditLog = stockAuditLogRepository.findById(stockAuditLogId);
-        if (!stockAuditLog.isPresent()) {
-            throw new ResourceNotFoundException("Stock Audit Log Not Found");
-        }
-        return stockAuditLog.get();
+        return stockAuditLogRepository.findById(stockAuditLogId).orElseThrow(() -> new ResourceNotFoundException("Stock Audit Log Not Found"));
     }
 
     public StockAuditLog recordStockChange(Item item, User user, StockChangeType type, Integer oldStock, Integer newStock, String reason, LocalDateTime timestamp) {
@@ -69,10 +65,7 @@ public class StockAuditLogService {
     }
 
     public void deleteStockAuditLog(UUID stockAuditLogId) {
-        Optional<StockAuditLog> stockAuditLog = stockAuditLogRepository.findById(stockAuditLogId);
-        if (!stockAuditLog.isPresent()) {
-            throw new ResourceNotFoundException("Stock Audit Log Not Found");
-        }
-        stockAuditLogRepository.delete(stockAuditLog.get());
+        StockAuditLog stockAuditLog = stockAuditLogRepository.findById(stockAuditLogId).orElseThrow(() -> new ResourceNotFoundException("Stock Audit Log Not Found"));
+        stockAuditLogRepository.delete(stockAuditLog);
     }
 }
