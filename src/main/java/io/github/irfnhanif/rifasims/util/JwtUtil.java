@@ -26,6 +26,12 @@ public class JwtUtil {
     @Value("${jwt.expiration:86400000}") // Default: 24 hours
     private Long expiration;
 
+    private final Key key;
+
+    public JwtUtil() {
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
+
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
@@ -86,6 +92,6 @@ public class JwtUtil {
     }
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return key;
     }
 }
