@@ -1,6 +1,9 @@
 package io.github.irfnhanif.rifasims.service;
 
+import io.github.irfnhanif.rifasims.entity.Item;
 import io.github.irfnhanif.rifasims.entity.StockAuditLog;
+import io.github.irfnhanif.rifasims.entity.StockChangeType;
+import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.StockAuditLogRepository;
 import org.springframework.data.domain.PageRequest;
@@ -53,7 +56,15 @@ public class StockAuditLogService {
         return stockAuditLog.get();
     }
 
-    public StockAuditLog recordStockChange(StockAuditLog stockAuditLog) {
+    public StockAuditLog recordStockChange(Item item, User user, StockChangeType type, Integer oldStock, Integer newStock, String reason, LocalDateTime timestamp) {
+        StockAuditLog stockAuditLog = new StockAuditLog();
+        stockAuditLog.setItem(item);
+        stockAuditLog.setUser(user);
+        stockAuditLog.setType(type);
+        stockAuditLog.setOldStock(oldStock);
+        stockAuditLog.setNewStock(newStock);
+        stockAuditLog.setReason(reason);
+        stockAuditLog.setTimestamp(timestamp);
         return stockAuditLogRepository.save(stockAuditLog);
     }
 

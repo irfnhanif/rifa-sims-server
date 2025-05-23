@@ -27,10 +27,10 @@ public class StockAuditLog {
     private StockChangeType type;
 
     @Column(nullable = false)
-    private int oldStock;
+    private Integer oldStock;
 
     @Column(nullable = false)
-    private int newStock;
+    private Integer newStock;
 
     @Lob
     @Column(columnDefinition = "TEXT")
