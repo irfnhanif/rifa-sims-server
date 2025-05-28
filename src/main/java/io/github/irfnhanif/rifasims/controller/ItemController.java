@@ -3,6 +3,7 @@ package io.github.irfnhanif.rifasims.controller;
 import io.github.irfnhanif.rifasims.dto.APIResponse;
 import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.CreateItemRequest;
+import io.github.irfnhanif.rifasims.dto.ItemDetailResponse;
 import io.github.irfnhanif.rifasims.entity.Item;
 import io.github.irfnhanif.rifasims.entity.StockAuditLog;
 import io.github.irfnhanif.rifasims.entity.StockChangeType;
@@ -54,26 +55,29 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<APIResponse<Item>> getItem(@PathVariable UUID itemId) {
+    public ResponseEntity<APIResponse<ItemDetailResponse>> getItem(@PathVariable UUID itemId, @RequestParam(required = false) LocalDateTime fromDate, @RequestParam(required = false) LocalDateTime toDate) {
         try {
-            Item item = itemService.getItemById(itemId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item retrieved successfully", item, null));
+            LocalDateTime checkedToDate = toDate != null ? toDate : LocalDateTime.now();
+            LocalDateTime checkedFromDate = fromDate != null ? fromDate : toDate.minusWeeks(1);
+
+            ItemDetailResponse response = itemService.getItemById(itemId, checkedFromDate, checkedToDate);
+            return ResponseEntity.ok(new APIResponse<>(true, "Item detail retrieved successfully", response, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
-    @GetMapping("/{itemId}/history")
-    public ResponseEntity<APIResponse<List<StockAuditLog>>> getItemHistory(@PathVariable UUID itemId,
-                                                                           @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate,
-                                                                           @RequestParam(required = false) StockChangeType type) {
-        try {
-            List<StockAuditLog> itemStockHistory = itemService.getStockAuditLogsByItemId(itemId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Stock History retrieved successfully", itemStockHistory, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
-    }
+//    @GetMapping("/{itemId}/history")
+//    public ResponseEntity<APIResponse<List<StockAuditLog>>> getItemHistory(@PathVariable UUID itemId,
+//                                                                           @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate,
+//                                                                           @RequestParam(required = false) StockChangeType type) {
+//        try {
+//            List<StockAuditLog> itemStockHistory = itemService.getStockAuditLogsByItemId(itemId);
+//            return ResponseEntity.ok(new APIResponse<>(true, "Stock History retrieved successfully", itemStockHistory, null));
+//        } catch (Exception e) {
+//            throw new InternalServerException(e.getMessage());
+//        }
+//    }
 
     @GetMapping("/barcode/{barcode}")
     public ResponseEntity<APIResponse<List<BarcodeScanResponse>>> getItemByBarcode(@PathVariable String barcode) {
