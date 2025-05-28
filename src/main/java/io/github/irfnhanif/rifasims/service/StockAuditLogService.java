@@ -6,6 +6,7 @@ import io.github.irfnhanif.rifasims.entity.StockChangeType;
 import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.StockAuditLogRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,11 @@ import java.util.UUID;
 public class StockAuditLogService {
 
     private final StockAuditLogRepository stockAuditLogRepository;
+    private final ItemStockService itemStockService;
 
-    public StockAuditLogService(StockAuditLogRepository stockAuditLogRepository) {
+    public StockAuditLogService(StockAuditLogRepository stockAuditLogRepository, @Lazy ItemStockService itemStockService) {
         this.stockAuditLogRepository = stockAuditLogRepository;
+        this.itemStockService = itemStockService;
     }
 
     public List<StockAuditLog> getStockAuditLogs(String itemName, String userName, LocalDateTime fromDate, LocalDateTime toDate, Integer page, Integer size) {
@@ -71,6 +74,9 @@ public class StockAuditLogService {
 
     public void deleteStockAuditLog(UUID stockAuditLogId) {
         StockAuditLog stockAuditLog = stockAuditLogRepository.findById(stockAuditLogId).orElseThrow(() -> new ResourceNotFoundException("Stock Audit Log Not Found"));
+
+        itemStockService.restoreOldItemStock(stockAuditLog.getItem(), stockAuditLog.getType(), stockAuditLog.getOldStock());
+
         stockAuditLogRepository.delete(stockAuditLog);
     }
 }
