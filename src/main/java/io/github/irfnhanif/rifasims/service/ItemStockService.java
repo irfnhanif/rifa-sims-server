@@ -108,6 +108,12 @@ public class ItemStockService {
         itemStockRepository.delete(itemStock);
     }
 
+    public void restoreOldItemStock(Item item, StockChangeType stockChangeType, Integer oldStock) {
+        ItemStock itemStock = itemStockRepository.findByItem(item).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        itemStock.setCurrentStock(oldStock);
+        itemStockRepository.save(itemStock);
+    }
+
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
