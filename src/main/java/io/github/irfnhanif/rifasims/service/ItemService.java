@@ -2,6 +2,7 @@ package io.github.irfnhanif.rifasims.service;
 
 import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.CreateItemRequest;
+import io.github.irfnhanif.rifasims.dto.ItemDetailResponse;
 import io.github.irfnhanif.rifasims.entity.*;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemRepository;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +24,13 @@ public class ItemService {
 
     private final ItemStockRepository itemStockRepository;
     private ItemRepository itemRepository;
-    private StockAuditLogRepository stockAuditLogRepository;
+    private StockAuditLogService stockAuditLogService;
     private ItemStockService itemStockService;
 
 
-    public ItemService(ItemRepository itemRepository, StockAuditLogRepository stockAuditLogRepository, ItemStockService itemStockService, ItemStockRepository itemStockRepository) {
+    public ItemService(ItemRepository itemRepository, StockAuditLogService stockAuditLogService, ItemStockService itemStockService, ItemStockRepository itemStockRepository) {
         this.itemRepository = itemRepository;
-        this.stockAuditLogRepository = stockAuditLogRepository;
+        this.stockAuditLogService = stockAuditLogService;
         this.itemStockService = itemStockService;
         this.itemStockRepository = itemStockRepository;
     }
@@ -46,46 +48,39 @@ public class ItemService {
         return responses;
     }
 
-    public List<StockAuditLog> getStockAuditLogsByItemId(UUID itemId) {
-        Optional<Item> item = itemRepository.findById(itemId);
-        if (!item.isPresent()) {
-            return new ArrayList<>();
-        }
-        return stockAuditLogRepository.findAllByItem(item.get());
-    }
+    public ItemDetailResponse getItemById(UUID itemId, LocalDateTime fromDate, LocalDateTime toDate) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 
-    public Item getItemById(UUID id) {
-        Optional<Item> item = itemRepository.findById(id);
-        if (!item.isPresent()) {
-            throw new ResourceNotFoundException("Item not found");
-        }
-        return item.get();
+        List<StockAuditLog> logs = stockAuditLogService.getStockAuditLogsByItem(item,fromDate,toDate);
+
+        ItemDetailResponse response = new ItemDetailResponse();
+        response.setItem(item);
+        response.setAuditLogs(logs);
+
+        return itemDetailResponse;
     }
 
     public Item createItem(CreateItemRequest createItemRequest) {
         Item item = createNewItem(createItemRequest.getName(), createItemRequest.getBarcode(), createItemRequest.getDescription());
         Item savedItem = itemRepository.save(item);
+
         ItemStock itemStock = createNewItemStock(savedItem, createItemRequest.getCurrentStock(), createItemRequest.getThreshold());
         itemStockService.createItemStock(itemStock);
+
         return savedItem;
     }
 
     public Item updateItem(UUID itemId, Item item) {
-        Optional<Item> itemOptional = itemRepository.findById(itemId);
-        if (!itemOptional.isPresent()) {
+        if (!itemRepository.existsById(itemId)) {
             throw new ResourceNotFoundException("Item not found");
         }
         item.setId(itemId);
-        itemRepository.save(item);
-        return item;
+        return itemRepository.save(item);
     }
 
     public void deleteItem(UUID id) {
-        Optional<Item> itemOptional = itemRepository.findById(id);
-        if (!itemOptional.isPresent()) {
-            throw new ResourceNotFoundException("Item not found");
-        }
-        itemRepository.delete(itemOptional.get());
+        Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        itemRepository.delete(item);
     }
 
     private Item createNewItem(String itemName, String itemBarcode, String itemDescription) {
@@ -103,6 +98,4 @@ public class ItemService {
         itemStock.setThreshold(threshold);
         return itemStock;
     }
-
-
 }
