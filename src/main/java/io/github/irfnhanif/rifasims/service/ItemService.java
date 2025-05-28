@@ -38,7 +38,7 @@ public class ItemService {
     public List<Item> getAllItems(String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         if (name != null) {
-            return itemRepository.findByNameContaining(name, pageable).getContent();
+            return itemRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
         }
         return itemRepository.findAll(pageable).getContent();
     }
