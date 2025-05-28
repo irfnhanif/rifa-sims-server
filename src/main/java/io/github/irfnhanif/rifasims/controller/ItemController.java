@@ -58,7 +58,7 @@ public class ItemController {
     public ResponseEntity<APIResponse<ItemDetailResponse>> getItem(@PathVariable UUID itemId, @RequestParam(required = false) LocalDateTime fromDate, @RequestParam(required = false) LocalDateTime toDate) {
         try {
             LocalDateTime checkedToDate = toDate != null ? toDate : LocalDateTime.now();
-            LocalDateTime checkedFromDate = fromDate != null ? fromDate : toDate.minusWeeks(1);
+            LocalDateTime checkedFromDate = fromDate != null ? fromDate : checkedToDate.minusWeeks(1);
 
             ItemDetailResponse response = itemService.getItemById(itemId, checkedFromDate, checkedToDate);
             return ResponseEntity.ok(new APIResponse<>(true, "Item detail retrieved successfully", response, null));
