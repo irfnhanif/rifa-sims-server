@@ -13,6 +13,7 @@ import java.util.UUID;
 public class StockAuditLog {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
@@ -36,6 +37,7 @@ public class StockAuditLog {
     @Column(columnDefinition = "TEXT")
     private String reason;
 
+    // Store all timestamps in Jakarta/Indonesia timezone (GMT+7)
     private LocalDateTime timestamp;
 
     public UUID getId() {
