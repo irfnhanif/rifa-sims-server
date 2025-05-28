@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,6 +47,10 @@ public class StockAuditLogService {
         }
 
         return stockAuditLogRepository.findAll(spec, PageRequest.of(page, size)).getContent();
+    }
+
+    public List<StockAuditLog> getStockAuditLogsByItem(Item item, LocalDateTime fromDate, LocalDateTime toDate) {
+        return stockAuditLogRepository.findAllByItemAndTimestampBetween(item, fromDate, toDate);
     }
 
     public StockAuditLog getStockAuditLogById(UUID stockAuditLogId) {
