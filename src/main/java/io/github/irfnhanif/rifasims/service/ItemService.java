@@ -57,7 +57,7 @@ public class ItemService {
         response.setItem(item);
         response.setAuditLogs(logs);
 
-        return itemDetailResponse;
+        return response;
     }
 
     public Item createItem(CreateItemRequest createItemRequest) {
