@@ -1,8 +1,10 @@
 package io.github.irfnhanif.rifasims.exception;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import io.github.irfnhanif.rifasims.dto.APIResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -54,6 +56,18 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
 
         APIResponse<Void> response = new APIResponse<>(false, "Validation failed", null, errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<APIResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        String message = "Format data tidak valid";
+        if (e.getCause() instanceof JsonMappingException) {
+            message = "Format data tidak valid: pastikan tipe data sesuai";
+        }
+
+        APIResponse<Void> response = new APIResponse<>(false, message, null,
+                Collections.singletonList(message));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
