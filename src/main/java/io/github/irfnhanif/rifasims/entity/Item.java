@@ -28,7 +28,7 @@ public class Item {
     @Column(nullable = false)
     @NotNull
     @NotBlank
-    @Pattern(regexp = "^[0-9A-Z\\-]{4,30}$", message = "Barcode must be 4-30 characters and contain only digits, uppercase letters, and hyphens")
+    @Pattern(regexp = "^[0-9A-Z\\-]{4,30}$", message = "Barcode harus 4-30 karakter dan hanya berisi angka, huruf kapital, dan tanda hubung")
     private String barcode;
 
     private String description;

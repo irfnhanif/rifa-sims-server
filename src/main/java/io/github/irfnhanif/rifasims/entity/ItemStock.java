@@ -1,6 +1,8 @@
 package io.github.irfnhanif.rifasims.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
@@ -16,8 +18,11 @@ public class ItemStock {
     private Item item;
 
     @Column(nullable = false)
+    @NotNull(message = "Stok saat ini tidak boleh kosong")
+    @Min(value = 0, message = "Stok saat ini tidak boleh negatif")
     private Integer currentStock;
 
+    @Min(value = 0, message = "Batas minimum stok tidak boleh negatif")
     private Integer threshold;
 
     public UUID getId() {
