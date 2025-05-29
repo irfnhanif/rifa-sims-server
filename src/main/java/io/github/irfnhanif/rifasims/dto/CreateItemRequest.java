@@ -2,10 +2,7 @@ package io.github.irfnhanif.rifasims.dto;
 
 import io.github.irfnhanif.rifasims.entity.Item;
 import io.github.irfnhanif.rifasims.entity.ItemStock;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class CreateItemRequest {
     @NotBlank(message = "Nama tidak boleh kosong")
@@ -13,7 +10,7 @@ public class CreateItemRequest {
     private String name;
 
     @NotBlank(message = "Barcode tidak boleh kosong")
-    @Size(max = 50, message = "Barcode tidak boleh lebih dari 50 karakter")
+    @Pattern(regexp = "^[0-9A-Z\\-]{4,30}$", message = "Barcode harus 4-30 karakter dan hanya berisi angka, huruf kapital, dan tanda hubung")
     private String barcode;
 
     @Size(max = 1000, message = "Deskripsi tidak boleh lebih dari 1000 karakter")
