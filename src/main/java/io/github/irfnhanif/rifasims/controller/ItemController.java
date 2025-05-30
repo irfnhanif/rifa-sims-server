@@ -29,14 +29,14 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-//    @PreAuthorize("hasRole('OWNER')")
+    //    @PreAuthorize("hasRole('OWNER')")
     @PostMapping("")
     public ResponseEntity<APIResponse<Item>> createItem(@Valid  @RequestBody CreateItemRequest createItemRequest) {
         try {
             Item createdItem = itemService.createItem(createItemRequest);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new APIResponse<>(true, "Item created successfully", createdItem, null));
+                    .body(new APIResponse<>(true, "Barang berhasil dibuat", createdItem, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -48,7 +48,7 @@ public class ItemController {
                                                                @RequestParam(required = false, defaultValue = "10") Integer size) {
         try {
             List<Item> items = itemService.getAllItems(name, page, size);
-            return ResponseEntity.ok(new APIResponse<>(true, "Items retrieved successfully", items, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diambil", items, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -58,7 +58,7 @@ public class ItemController {
     public ResponseEntity<APIResponse<Item>> getItem(@PathVariable UUID itemId) {
         try {
             Item item = itemService.getItemById(itemId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item retrieved successfully", item, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diambil", item, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -71,30 +71,30 @@ public class ItemController {
             LocalDateTime checkedFromDate = fromDate != null ? fromDate : checkedToDate.minusWeeks(1);
 
             ItemDetailResponse response = itemService.getItemById(itemId, checkedFromDate, checkedToDate);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item detail retrieved successfully", response, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Detail barang berhasil diambil", response, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
 
-//    @PreAuthorize("hasRole('OWNER')")
+    //    @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/{itemId}")
     public ResponseEntity<APIResponse<Item>> updateItem(@PathVariable UUID itemId, @Valid @RequestBody Item item) {
         try {
             Item updatedItem = itemService.updateItem(itemId, item);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item updated successfully", updatedItem, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diperbarui", updatedItem, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
     }
 
-//    @PreAuthorize("hasRole('OWNER')")
+    //    @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("/{itemId}")
     public ResponseEntity<APIResponse<Void>> deleteItem(@PathVariable UUID itemId) {
         try {
             itemService.deleteItem(itemId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item deleted successfully", null, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil dihapus", null, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
