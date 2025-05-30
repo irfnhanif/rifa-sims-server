@@ -6,8 +6,6 @@ import io.github.irfnhanif.rifasims.dto.ItemDetailResponse;
 import io.github.irfnhanif.rifasims.entity.*;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemRepository;
-import io.github.irfnhanif.rifasims.repository.ItemStockRepository;
-import io.github.irfnhanif.rifasims.repository.StockAuditLogRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,17 +20,15 @@ import java.util.UUID;
 @Service
 public class ItemService {
 
-    private final ItemStockRepository itemStockRepository;
     private ItemRepository itemRepository;
     private StockAuditLogService stockAuditLogService;
     private ItemStockService itemStockService;
 
 
-    public ItemService(ItemRepository itemRepository, StockAuditLogService stockAuditLogService, ItemStockService itemStockService, ItemStockRepository itemStockRepository) {
+    public ItemService(ItemRepository itemRepository, StockAuditLogService stockAuditLogService, ItemStockService itemStockService) {
         this.itemRepository = itemRepository;
         this.stockAuditLogService = stockAuditLogService;
         this.itemStockService = itemStockService;
-        this.itemStockRepository = itemStockRepository;
     }
 
     public List<Item> getAllItems(String name, Integer page, Integer size) {
@@ -41,11 +37,6 @@ public class ItemService {
             return itemRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
         }
         return itemRepository.findAll(pageable).getContent();
-    }
-
-    public List<BarcodeScanResponse> getItemsByBarcode(String barcode) {
-        List<BarcodeScanResponse> responses = itemStockRepository.findItemStocksByBarcode(barcode);
-        return responses;
     }
 
     public ItemDetailResponse getItemById(UUID itemId, LocalDateTime fromDate, LocalDateTime toDate) {
@@ -80,6 +71,7 @@ public class ItemService {
 
     public void deleteItem(UUID id) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        itemStockService.deleteItemStockChange(item);
         itemRepository.delete(item);
     }
 

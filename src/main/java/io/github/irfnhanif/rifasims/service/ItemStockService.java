@@ -1,11 +1,11 @@
 package io.github.irfnhanif.rifasims.service;
 
+import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.EditStockChangeRequest;
 import io.github.irfnhanif.rifasims.dto.ScanStockChangeRequest;
 import io.github.irfnhanif.rifasims.entity.*;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemStockRepository;
-import io.github.irfnhanif.rifasims.repository.StockAuditLogRepository;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,6 +40,11 @@ public class ItemStockService {
     public List<ItemStock> getItemStocksLessThanThreshold(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         return itemStockRepository.findItemStocksBelowThreshold(pageable).getContent();
+    }
+
+    public List<BarcodeScanResponse> getItemStocksByBarcode(String barcode) {
+        List<BarcodeScanResponse> responses = itemStockRepository.findItemStocksByBarcode(barcode);
+        return responses;
     }
 
     public ItemStock getItemStockById(UUID itemStockId) {
@@ -103,8 +107,8 @@ public class ItemStockService {
         return itemStock;
     }
 
-    public void deleteItemStockChange(UUID itemStockId) {
-        ItemStock itemStock = itemStockRepository.findById(itemStockId).orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
+    public void deleteItemStockChange(Item item) {
+        ItemStock itemStock = itemStockRepository.findByItem(item).orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
         itemStockRepository.delete(itemStock);
     }
 

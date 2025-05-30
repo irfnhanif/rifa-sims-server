@@ -67,31 +67,6 @@ public class ItemController {
         }
     }
 
-//    @GetMapping("/{itemId}/history")
-//    public ResponseEntity<APIResponse<List<StockAuditLog>>> getItemHistory(@PathVariable UUID itemId,
-//                                                                           @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate,
-//                                                                           @RequestParam(required = false) StockChangeType type) {
-//        try {
-//            List<StockAuditLog> itemStockHistory = itemService.getStockAuditLogsByItemId(itemId);
-//            return ResponseEntity.ok(new APIResponse<>(true, "Stock History retrieved successfully", itemStockHistory, null));
-//        } catch (Exception e) {
-//            throw new InternalServerException(e.getMessage());
-//        }
-//    }
-
-    @GetMapping("/barcode/{barcode}")
-    public ResponseEntity<APIResponse<List<BarcodeScanResponse>>> getItemByBarcode(@PathVariable String barcode) {
-        try {
-            if (barcode == null || barcode.isEmpty()) {
-                throw new BadRequestException("Barcode cannot be empty");
-            }
-
-            List<BarcodeScanResponse> responses = itemService.getItemsByBarcode(barcode);
-            return ResponseEntity.ok(new APIResponse<>(true, "Items retrieved successfully", responses, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
-    }
 
 //    @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/{itemId}")

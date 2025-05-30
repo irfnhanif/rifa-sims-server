@@ -1,9 +1,11 @@
 package io.github.irfnhanif.rifasims.controller;
 
 import io.github.irfnhanif.rifasims.dto.APIResponse;
+import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.EditStockChangeRequest;
 import io.github.irfnhanif.rifasims.dto.ScanStockChangeRequest;
 import io.github.irfnhanif.rifasims.entity.ItemStock;
+import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.InternalServerException;
 import io.github.irfnhanif.rifasims.service.ItemStockService;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +45,20 @@ public class ItemStockController {
         }
     }
 
+    @GetMapping("/barcode/{barcode}")
+    public ResponseEntity<APIResponse<List<BarcodeScanResponse>>> getItemByBarcode(@PathVariable String barcode) {
+        try {
+            if (barcode == null || barcode.isEmpty()) {
+                throw new BadRequestException("Barcode cannot be empty");
+            }
+
+            List<BarcodeScanResponse> responses = itemStockService.getItemStocksByBarcode(barcode);
+            return ResponseEntity.ok(new APIResponse<>(true, "Items retrieved successfully", responses, null));
+        } catch (Exception e) {
+            throw new InternalServerException(e.getMessage());
+        }
+    }
+
     @GetMapping("/{itemStockId}")
     public ResponseEntity<APIResponse<ItemStock>> getItemStock(@PathVariable UUID itemStockId) {
         try {
@@ -68,16 +84,6 @@ public class ItemStockController {
         try {
             ItemStock scannedItemStock = itemStockService.updateScanItemStockChange(itemStockId, scanStockChangeRequest);
             return ResponseEntity.ok(new APIResponse<>(true, "Item stock scanned successfully", scannedItemStock, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{itemStockId}")
-    public ResponseEntity<APIResponse<Void>> deleteItemStock(@PathVariable UUID itemStockId) {
-        try {
-            itemStockService.deleteItemStockChange(itemStockId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item deleted successfully", null, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
