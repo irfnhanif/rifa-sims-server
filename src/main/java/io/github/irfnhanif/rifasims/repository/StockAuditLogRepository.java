@@ -11,5 +11,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface StockAuditLogRepository  extends JpaRepository<StockAuditLog, UUID>, JpaSpecificationExecutor<StockAuditLog> {
-    List<StockAuditLog> findAllByItemAndTimestampBetween(Item item, LocalDateTime fromDate, LocalDateTime toDate);
+    List<StockAuditLog> findAllByItemNameAndItemBarcodeAndTimestampBetween(String name, String barcode, LocalDateTime fromDate, LocalDateTime toDate);
 }

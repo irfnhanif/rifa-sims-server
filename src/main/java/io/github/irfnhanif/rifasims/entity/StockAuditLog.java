@@ -8,7 +8,7 @@ import java.util.UUID;
 @Entity
 @Table(indexes = {
         @Index(name = "idx_stock_audit_log_timestamp", columnList = "timestamp"),
-        @Index(name = "idx_stock_audit_log_composite_item_id_timestamp", columnList = "item_id, timestamp")
+        @Index(name = "idx_stock_audit_log_composite_item_name_timestamp", columnList = "item_name, timestamp")
 })
 public class StockAuditLog {
 
@@ -26,6 +26,7 @@ public class StockAuditLog {
     private String username;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private StockChangeType type;
 
     @Column(nullable = false)

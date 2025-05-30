@@ -53,7 +53,7 @@ public class StockAuditLogService {
     }
 
     public List<StockAuditLog> getStockAuditLogsByItem(Item item, LocalDateTime fromDate, LocalDateTime toDate) {
-        return stockAuditLogRepository.findAllByItemAndTimestampBetween(item, fromDate, toDate);
+        return stockAuditLogRepository.findAllByItemNameAndItemBarcodeAndTimestampBetween(item.getName(), item.getBarcode(), fromDate, toDate);
     }
 
     public StockAuditLog getStockAuditLogById(UUID stockAuditLogId) {
