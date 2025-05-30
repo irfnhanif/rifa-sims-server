@@ -41,6 +41,10 @@ public class ItemService {
         return itemRepository.findAll(pageable).getContent();
     }
 
+    public Item getItemById(UUID id) {
+        return itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+    }
+
     public ItemDetailResponse getItemById(UUID itemId, LocalDateTime fromDate, LocalDateTime toDate) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 

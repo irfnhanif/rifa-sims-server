@@ -55,6 +55,16 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
+    public ResponseEntity<APIResponse<Item>> getItem(@PathVariable UUID itemId) {
+        try {
+            Item item = itemService.getItemById(itemId);
+            return ResponseEntity.ok(new APIResponse<>(true, "Item retrieved successfully", item, null));
+        } catch (Exception e) {
+            throw new InternalServerException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{itemId}/detail")
     public ResponseEntity<APIResponse<ItemDetailResponse>> getItem(@PathVariable UUID itemId, @RequestParam(required = false) LocalDateTime fromDate, @RequestParam(required = false) LocalDateTime toDate) {
         try {
             LocalDateTime checkedToDate = toDate != null ? toDate : LocalDateTime.now();
