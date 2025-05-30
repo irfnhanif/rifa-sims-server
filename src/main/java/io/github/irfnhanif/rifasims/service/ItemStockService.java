@@ -21,12 +21,12 @@ import java.util.UUID;
 public class ItemStockService {
 
     private final ItemStockRepository itemStockRepository;
-    private final UserRepository userRepository;
     private final StockAuditLogService stockAuditLogService;
-    public ItemStockService(ItemStockRepository itemStockRepository, UserRepository userRepository, StockAuditLogService stockAuditLogService) {
+    private final UserService userService;
+    public ItemStockService(ItemStockRepository itemStockRepository, StockAuditLogService stockAuditLogService, UserService userService) {
         this.itemStockRepository = itemStockRepository;
-        this.userRepository = userRepository;
         this.stockAuditLogService = stockAuditLogService;
+        this.userService = userService;
     }
 
     public List<ItemStock> getAllItemStocks(String name, Integer page, Integer size) {
@@ -68,7 +68,7 @@ public class ItemStockService {
 
         stockAuditLogService.recordStockChange(
                 existingItemStock.getItem(),
-                getCurrentUser(),
+                userService.getCurrentUser(),
                 StockChangeType.MANUAL_EDIT,
                 oldStock,
                 editStockChangeRequest.getCurrentStock(),
@@ -96,7 +96,7 @@ public class ItemStockService {
 
         stockAuditLogService.recordStockChange(
                 itemStock.getItem(),
-                getCurrentUser(),
+                userService.getCurrentUser(),
                 scanStockChangeRequest.getChangeType(),
                 oldStock,
                 newStock,
@@ -107,21 +107,16 @@ public class ItemStockService {
         return itemStock;
     }
 
-    public void deleteItemStockChange(Item item) {
+    public Integer deleteItemStockChange(Item item) {
         ItemStock itemStock = itemStockRepository.findByItem(item).orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
+        Integer oldStock = itemStock.getCurrentStock();
         itemStockRepository.delete(itemStock);
+        return oldStock;
     }
 
     public void restoreOldItemStock(String itemName, StockChangeType stockChangeType, Integer oldStock) {
         ItemStock itemStock = itemStockRepository.findByItem_Name(itemName).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
         itemStock.setCurrentStock(oldStock);
         itemStockRepository.save(itemStock);
-    }
-
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

@@ -23,12 +23,14 @@ public class ItemService {
     private ItemRepository itemRepository;
     private StockAuditLogService stockAuditLogService;
     private ItemStockService itemStockService;
+    private UserService userService;
 
 
-    public ItemService(ItemRepository itemRepository, StockAuditLogService stockAuditLogService, ItemStockService itemStockService) {
+    public ItemService(ItemRepository itemRepository, StockAuditLogService stockAuditLogService, ItemStockService itemStockService, UserService userService) {
         this.itemRepository = itemRepository;
         this.stockAuditLogService = stockAuditLogService;
         this.itemStockService = itemStockService;
+        this.userService = userService;
     }
 
     public List<Item> getAllItems(String name, Integer page, Integer size) {
@@ -58,6 +60,16 @@ public class ItemService {
         ItemStock itemStock = createNewItemStock(savedItem, createItemRequest.getCurrentStock(), createItemRequest.getThreshold());
         itemStockService.createItemStock(itemStock);
 
+        stockAuditLogService.recordStockChange(
+                savedItem,
+                userService.getCurrentUser(),
+                StockChangeType.CREATE,
+                0,
+                createItemRequest.getCurrentStock(),
+                null,
+                LocalDateTime.now()
+        );
+
         return savedItem;
     }
 
@@ -71,8 +83,18 @@ public class ItemService {
 
     public void deleteItem(UUID id) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
-        itemStockService.deleteItemStockChange(item);
+        Integer oldStock = itemStockService.deleteItemStockChange(item);
         itemRepository.delete(item);
+
+        stockAuditLogService.recordStockChange(
+                item,
+                userService.getCurrentUser(),
+                StockChangeType.DELETE,
+                oldStock,
+                0,
+                null,
+                LocalDateTime.now()
+        );
     }
 
     private Item createNewItem(String itemName, String itemBarcode, String itemDescription) {
