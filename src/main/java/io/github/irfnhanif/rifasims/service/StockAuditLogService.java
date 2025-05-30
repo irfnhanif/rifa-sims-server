@@ -62,8 +62,9 @@ public class StockAuditLogService {
 
     public StockAuditLog recordStockChange(Item item, User user, StockChangeType type, Integer oldStock, Integer newStock, String reason, LocalDateTime timestamp) {
         StockAuditLog stockAuditLog = new StockAuditLog();
-        stockAuditLog.setItem(item);
-        stockAuditLog.setUser(user);
+        stockAuditLog.setItemName(item.getName());
+        stockAuditLog.setItemBarcode(item.getBarcode());
+        stockAuditLog.setUsername(user.getUsername());
         stockAuditLog.setType(type);
         stockAuditLog.setOldStock(oldStock);
         stockAuditLog.setNewStock(newStock);
@@ -75,7 +76,7 @@ public class StockAuditLogService {
     public void deleteStockAuditLog(UUID stockAuditLogId) {
         StockAuditLog stockAuditLog = stockAuditLogRepository.findById(stockAuditLogId).orElseThrow(() -> new ResourceNotFoundException("Stock Audit Log Not Found"));
 
-        itemStockService.restoreOldItemStock(stockAuditLog.getItem(), stockAuditLog.getType(), stockAuditLog.getOldStock());
+        itemStockService.restoreOldItemStock(stockAuditLog.getItemName(), stockAuditLog.getType(), stockAuditLog.getOldStock());
 
         stockAuditLogRepository.delete(stockAuditLog);
     }

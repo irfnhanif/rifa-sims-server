@@ -16,7 +16,6 @@ public class StockAuditLog {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    // change these related item and user to their properties so there will be no fk dependant on audit log
     @Column(nullable = false)
     private String itemName;
 
