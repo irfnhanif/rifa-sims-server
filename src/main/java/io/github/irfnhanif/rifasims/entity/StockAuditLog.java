@@ -16,13 +16,15 @@ public class StockAuditLog {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
+    // change these related item and user to their properties so there will be no fk dependant on audit log
+    @Column(nullable = false)
+    private String itemName;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private String itemBarcode;
+
+    @Column(nullable = false)
+    private String username;
 
     @Column(nullable = false)
     private StockChangeType type;
@@ -48,20 +50,28 @@ public class StockAuditLog {
         this.id = id;
     }
 
-    public Item getItem() {
-        return item;
+    public String getItemName() {
+        return itemName;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
-    public User getUser() {
-        return user;
+    public String getItemBarcode() {
+        return itemBarcode;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setItemBarcode(String itemBarcode) {
+        this.itemBarcode = itemBarcode;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public StockChangeType getType() {
@@ -72,19 +82,19 @@ public class StockAuditLog {
         this.type = type;
     }
 
-    public int getOldStock() {
+    public Integer getOldStock() {
         return oldStock;
     }
 
-    public void setOldStock(int oldStock) {
+    public void setOldStock(Integer oldStock) {
         this.oldStock = oldStock;
     }
 
-    public int getNewStock() {
+    public Integer getNewStock() {
         return newStock;
     }
 
-    public void setNewStock(int newStock) {
+    public void setNewStock(Integer newStock) {
         this.newStock = newStock;
     }
 
