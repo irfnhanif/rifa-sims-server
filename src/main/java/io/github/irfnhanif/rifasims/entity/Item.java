@@ -31,6 +31,7 @@ public class Item {
     @Pattern(regexp = "^[0-9A-Z\\-]{4,30}$", message = "Barcode harus 4-30 karakter dan hanya berisi angka, huruf kapital, dan tanda hubung")
     private String barcode;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     public UUID getId() {

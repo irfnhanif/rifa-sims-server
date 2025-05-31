@@ -73,6 +73,7 @@ public class ItemController {
             ItemDetailResponse response = itemService.getItemById(itemId, checkedFromDate, checkedToDate);
             return ResponseEntity.ok(new APIResponse<>(true, "Detail barang berhasil diambil", response, null));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new InternalServerException(e.getMessage());
         }
     }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ItemDetailResponse {
     private Item item;
-    private List<StockAuditLog> auditLogs;
+    private List<StockAuditLog> stockAuditLogs;
 
     public Item getItem() {
         return item;
@@ -17,11 +17,11 @@ public class ItemDetailResponse {
         this.item = item;
     }
 
-    public List<StockAuditLog> getAuditLogs() {
-        return auditLogs;
+    public List<StockAuditLog> getStockAuditLogs() {
+        return stockAuditLogs;
     }
 
-    public void setAuditLogs(List<StockAuditLog> auditLogs) {
-        this.auditLogs = auditLogs;
+    public void setStockAuditLogs(List<StockAuditLog> stockAuditLogs) {
+        this.stockAuditLogs = stockAuditLogs;
     }
 }

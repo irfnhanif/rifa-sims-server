@@ -1,6 +1,5 @@
 package io.github.irfnhanif.rifasims.service;
 
-import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.CreateItemRequest;
 import io.github.irfnhanif.rifasims.dto.ItemDetailResponse;
 import io.github.irfnhanif.rifasims.entity.*;
@@ -10,11 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -52,7 +48,7 @@ public class ItemService {
 
         ItemDetailResponse response = new ItemDetailResponse();
         response.setItem(item);
-        response.setAuditLogs(logs);
+        response.setStockAuditLogs(logs);
 
         return response;
     }
