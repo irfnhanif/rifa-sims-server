@@ -35,7 +35,6 @@ public class StockAuditLog {
     @Column(nullable = false)
     private Integer newStock;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String reason;
 
