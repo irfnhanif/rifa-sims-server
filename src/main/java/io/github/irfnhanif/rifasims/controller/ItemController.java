@@ -1,13 +1,9 @@
 package io.github.irfnhanif.rifasims.controller;
 
 import io.github.irfnhanif.rifasims.dto.APIResponse;
-import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.CreateItemRequest;
 import io.github.irfnhanif.rifasims.dto.ItemDetailResponse;
 import io.github.irfnhanif.rifasims.entity.Item;
-import io.github.irfnhanif.rifasims.entity.StockAuditLog;
-import io.github.irfnhanif.rifasims.entity.StockChangeType;
-import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.InternalServerException;
 import io.github.irfnhanif.rifasims.service.ItemService;
 import jakarta.validation.Valid;

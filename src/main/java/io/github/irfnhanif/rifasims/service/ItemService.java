@@ -53,6 +53,10 @@ public class ItemService {
         return response;
     }
 
+    public Item getItemByName(String name) {
+        return itemRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+    }
+
     public Item createItem(CreateItemRequest createItemRequest) {
         Item item = createNewItem(createItemRequest.getName(), createItemRequest.getBarcode(), createItemRequest.getDescription());
         Item savedItem = itemRepository.save(item);
