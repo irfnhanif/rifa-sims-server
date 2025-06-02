@@ -18,7 +18,6 @@ import java.util.UUID;
 @RequestMapping("/api/item-stocks")
 public class ItemStockController {
 
-
     private final ItemStockService itemStockService;
 
     public ItemStockController(ItemStockService itemStockService) {
@@ -29,7 +28,7 @@ public class ItemStockController {
     public ResponseEntity<APIResponse<List<ItemStock>>> getItemStocks(@RequestParam(required = false) String name, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
         try {
             List<ItemStock> itemStocks = itemStockService.getAllItemStocks(name, page, size);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item stocks retrieved successfully", itemStocks, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil diambil", itemStocks, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -39,7 +38,7 @@ public class ItemStockController {
     public ResponseEntity<APIResponse<List<ItemStock>>> getItemStocksLessThanThreshold(@RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
         try {
             List<ItemStock> itemStocks = itemStockService.getItemStocksLessThanThreshold(page, size);
-            return ResponseEntity.ok(new APIResponse<>(true, "Near-empty item stocks retrieved successfully", itemStocks, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang hampir habis berhasil diambil", itemStocks, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -49,11 +48,11 @@ public class ItemStockController {
     public ResponseEntity<APIResponse<List<BarcodeScanResponse>>> getItemByBarcode(@PathVariable String barcode) {
         try {
             if (barcode == null || barcode.isEmpty()) {
-                throw new BadRequestException("Barcode cannot be empty");
+                throw new BadRequestException("Barcode tidak boleh kosong");
             }
 
             List<BarcodeScanResponse> responses = itemStockService.getItemStocksByBarcode(barcode);
-            return ResponseEntity.ok(new APIResponse<>(true, "Items retrieved successfully", responses, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diambil", responses, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -63,7 +62,7 @@ public class ItemStockController {
     public ResponseEntity<APIResponse<ItemStock>> getItemStock(@PathVariable UUID itemStockId) {
         try {
             ItemStock itemStock = itemStockService.getItemStockById(itemStockId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item stock retrieved successfully", itemStock, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil diambil", itemStock, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -73,7 +72,7 @@ public class ItemStockController {
     public ResponseEntity<APIResponse<ItemStock>> updateItemStock(@PathVariable UUID itemStockId, @RequestBody EditStockChangeRequest editStockChangeRequest) {
         try {
             ItemStock updatedItemStock = itemStockService.updateItemStockChange(itemStockId, editStockChangeRequest);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item stock updated successfully", updatedItemStock, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil diperbarui", updatedItemStock, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -83,7 +82,7 @@ public class ItemStockController {
     public ResponseEntity<APIResponse<ItemStock>> scanItemStock(@PathVariable UUID itemStockId, @RequestBody ScanStockChangeRequest scanStockChangeRequest) {
         try {
             ItemStock scannedItemStock = itemStockService.updateScanItemStockChange(itemStockId, scanStockChangeRequest);
-            return ResponseEntity.ok(new APIResponse<>(true, "Item stock scanned successfully", scannedItemStock, null));
+            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil dipindai", scannedItemStock, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
         }
