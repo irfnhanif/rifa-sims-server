@@ -41,6 +41,10 @@ public class StockAuditLog {
     // Store all timestamps in Jakarta/Indonesia timezone (GMT+7)
     private LocalDateTime timestamp;
 
+    private Boolean deleted;
+
+    private LocalDateTime deletedTimestamp;
+
     public UUID getId() {
         return id;
     }
@@ -108,4 +112,20 @@ public class StockAuditLog {
     public LocalDateTime getTimestamp() {return timestamp;}
 
     public void setTimestamp(LocalDateTime timestamp) {this.timestamp = timestamp;}
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public LocalDateTime getDeletedTimestamp() {
+        return deletedTimestamp;
+    }
+
+    public void setDeletedTimestamp(LocalDateTime deletedTimestamp) {
+        this.deletedTimestamp = deletedTimestamp;
+    }
 }
