@@ -4,6 +4,7 @@ import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.EditStockChangeRequest;
 import io.github.irfnhanif.rifasims.dto.ScanStockChangeRequest;
 import io.github.irfnhanif.rifasims.entity.*;
+import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemStockRepository;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -91,6 +93,10 @@ public class ItemStockService {
             newStock = itemStock.getCurrentStock() + scanStockChangeRequest.getAmount();
         }
 
+        if (newStock < 0) {
+            throw new BadRequestException("Jumlah stok tidak boleh di bawah 0");
+        }
+
         itemStock.setCurrentStock(newStock);
         itemStockRepository.save(itemStock);
 
@@ -114,9 +120,20 @@ public class ItemStockService {
         return oldStock;
     }
 
-    public void restoreOldItemStock(String itemName, StockChangeType stockChangeType, Integer oldStock) {
+    public Map<String, Integer> restoreOldItemStock(String itemName, StockChangeType stockChangeType, Integer difference) {
         ItemStock itemStock = itemStockRepository.findByItem_Name(itemName).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
-        itemStock.setCurrentStock(oldStock);
+        Integer originalStock = itemStock.getCurrentStock();
+        Integer newStock = 0;
+
+        if (stockChangeType == StockChangeType.IN) {
+            itemStock.setCurrentStock(originalStock - difference);
+            newStock = itemStock.getCurrentStock();
+        } else {
+            itemStock.setCurrentStock(originalStock + difference);
+            newStock = itemStock.getCurrentStock();
+        }
         itemStockRepository.save(itemStock);
+
+        return Map.of("oldStock", originalStock, "newStock", newStock);
     }
 }
