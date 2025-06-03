@@ -15,16 +15,33 @@ import java.util.UUID;
 
 // Service to manage notifications
 @Service
-public class NotificationService {
+public class SystemNotificationService {
 
     private final ItemStockService itemStockService;
     private final UserService userService;
     private final SystemNotificationRepository systemNotificationRepository;
 
-    public NotificationService(ItemStockService itemStockService, UserService userService, SystemNotificationRepository systemNotificationRepository) {
+    public SystemNotificationService(ItemStockService itemStockService, UserService userService, SystemNotificationRepository systemNotificationRepository) {
         this.itemStockService = itemStockService;
         this.userService = userService;
         this.systemNotificationRepository = systemNotificationRepository;
+    }
+
+    public List<SystemNotification> getNotificationsForOwner() {
+        return systemNotificationRepository.findByReadFalseOrderByCreatedAtDesc();
+    }
+
+    public void markAsRead(UUID notificationId) {
+        SystemNotification notification = systemNotificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+        notification.setRead(true);
+        systemNotificationRepository.save(notification);
+    }
+
+    public void markAllAsRead() {
+        List<SystemNotification> unreadNotifications = systemNotificationRepository.findByReadFalse();
+        unreadNotifications.forEach(n -> n.setRead(true));
+        systemNotificationRepository.saveAll(unreadNotifications);
     }
 
 
@@ -78,22 +95,5 @@ public class NotificationService {
         notification.setRead(false);
 
         systemNotificationRepository.save(notification);
-    }
-
-    public List<SystemNotification> getNotificationsForOwner() {
-        return systemNotificationRepository.findByReadFalseOrderByCreatedAtDesc();
-    }
-
-    public void markAsRead(UUID notificationId) {
-        SystemNotification notification = systemNotificationRepository.findById(notificationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
-        notification.setRead(true);
-        systemNotificationRepository.save(notification);
-    }
-
-    public void markAllAsRead() {
-        List<SystemNotification> unreadNotifications = systemNotificationRepository.findByReadFalse();
-        unreadNotifications.forEach(n -> n.setRead(true));
-        systemNotificationRepository.saveAll(unreadNotifications);
     }
 }
