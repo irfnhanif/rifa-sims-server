@@ -39,6 +39,9 @@ public class User {
     @NotNull(message = "Status tidak boleh kosong")
     private UserStatus status;
 
+    @Column(name = "added_to_notification", nullable = false)
+    private boolean addedToNotification = false;
+
     public UUID getId() {
         return id;
     }
