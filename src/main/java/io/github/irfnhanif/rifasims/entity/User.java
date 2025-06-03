@@ -89,5 +89,13 @@ public class User {
     public void setStatus(UserStatus status) {
         this.status = status;
     }
+
+    public boolean isAddedToNotification() {
+        return addedToNotification;
+    }
+
+    public void setAddedToNotification(boolean addedToNotification) {
+        this.addedToNotification = addedToNotification;
+    }
 }
 

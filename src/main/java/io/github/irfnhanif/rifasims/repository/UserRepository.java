@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String username);
-    List<User> findByBranch(Integer branch);
-    List<User> findByRole(UserRole role);
     List<User> findByStatus(UserStatus status);
+
+    List<User> findByStatusAndAddedToNotificationFalse(UserStatus userStatus);
 }
