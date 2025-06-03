@@ -21,6 +21,10 @@ public interface ItemStockRepository extends JpaRepository<ItemStock, UUID> {
 
     @Query("SELECT is FROM ItemStock is WHERE is.currentStock < is.threshold")
     Page<ItemStock> findItemStocksBelowThreshold(Pageable pageable);
+
+    @Query("SELECT is FROM ItemStock is WHERE is.currentStock < is.threshold")
+    List<ItemStock> findAllItemStocksBelowThreshold();
+
     Page<ItemStock> findByItem_NameContaining(String itemName, Pageable pageable);
 
     Optional<ItemStock> findByItem_Name(String itemName);
