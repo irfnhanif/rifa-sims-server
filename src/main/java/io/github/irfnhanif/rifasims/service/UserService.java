@@ -24,6 +24,17 @@ public class UserService {
         return pendingUsers;
     }
 
+    public List<User> getPendingUsersAndAddedToNotificationFalse() {
+        List<User> pendingUsers = userRepository.findByStatusAndAddedToNotificationFalse(UserStatus.PENDING);
+        return pendingUsers;
+    }
+
+    public void setUserAddedToNotificationTrue(UUID id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setAddedToNotification(true);
+        userRepository.save(user);
+    }
+
     public User acceptUser(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setStatus(UserStatus.ACTIVE);

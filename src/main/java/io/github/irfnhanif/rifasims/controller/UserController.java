@@ -18,7 +18,7 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 @PreAuthorize("hasAuthority('OWNER')")
 public class UserController {
-
+    // jangan lupa translate response.message ke bahasa indo
     private final UserService userService;
 
     public UserController(UserService userService) {
