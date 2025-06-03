@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-// Service to manage notifications
 @Service
 public class SystemNotificationService {
 
@@ -45,7 +45,7 @@ public class SystemNotificationService {
     }
 
 
-    @Scheduled(fixedRate = 3600000) // Run hourly
+    @Scheduled(fixedRate = 60000) // Run hourly
     public void checkForNotificationEvents() {
         checkLowStockItems();
         checkPendingUsers();
@@ -63,8 +63,7 @@ public class SystemNotificationService {
                         NotificationType.LOW_STOCK,
                         stock.getId(),
                         "Low Stock Alert: " + stock.getItem().getName(),
-                        "Jumlah barang " + stock.getItem().getName() + " di bawah batas minimal. Jumlah sekarang: " +
-                                stock.getCurrentStock() + ", Batas minimal: " + stock.getThreshold()
+                        "Jumlah barang " + stock.getItem().getName() + " di bawah batas minimal. Jumlah sekarang: " + stock.getCurrentStock() + ", Batas minimal: " + stock.getThreshold()
                 );
             }
         }

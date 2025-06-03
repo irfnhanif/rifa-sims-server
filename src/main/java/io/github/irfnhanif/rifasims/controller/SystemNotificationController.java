@@ -1,7 +1,9 @@
 package io.github.irfnhanif.rifasims.controller;
 
+import io.github.irfnhanif.rifasims.dto.APIResponse;
 import io.github.irfnhanif.rifasims.entity.SystemNotification;
 import io.github.irfnhanif.rifasims.service.SystemNotificationService;
+import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +20,14 @@ public class SystemNotificationController {
         this.systemNotificationService = systemNotificationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<SystemNotification>> getNotifications() {
-        return ResponseEntity.ok(systemNotificationService.getNotificationsForOwner());
+    @GetMapping("")
+    public ResponseEntity<APIResponse<List<SystemNotification>>> getNotifications() {
+        try {
+            List<SystemNotification> notifications = systemNotificationService.getNotificationsForOwner();
+            return ResponseEntity.ok(new APIResponse<>(true, "Berhasil mengambil data notifikasi", notifications, null));
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}/read")
