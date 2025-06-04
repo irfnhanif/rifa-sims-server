@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class SystemNotificationService {
@@ -45,7 +44,7 @@ public class SystemNotificationService {
     }
 
 
-    @Scheduled(fixedRate = 60000) // Run hourly
+    @Scheduled(fixedRate = 60000)
     public void checkForNotificationEvents() {
         checkLowStockItems();
         checkPendingUsers();
@@ -55,15 +54,14 @@ public class SystemNotificationService {
         List<ItemStock> lowStockItems = itemStockService.getAllItemStocksBelowThreshold();
 
         for (ItemStock stock : lowStockItems) {
-            // Check if notification already exists
             if (!systemNotificationRepository.existsByTypeAndReferenceIdAndReadFalseAndCreatedAtAfter(
                     NotificationType.LOW_STOCK, stock.getId(), LocalDateTime.now().minusDays(1))) {
 
                 createNotification(
                         NotificationType.LOW_STOCK,
                         stock.getId(),
-                        "Low Stock Alert: " + stock.getItem().getName(),
-                        "Jumlah barang " + stock.getItem().getName() + " di bawah batas minimal. Jumlah sekarang: " + stock.getCurrentStock() + ", Batas minimal: " + stock.getThreshold()
+                        "Peringatan Stok Barang: \n" + stock.getItem().getName(),
+                        "Jumlah barang " + stock.getItem().getName() + " di bawah batas minimal. \nJumlah sekarang: " + stock.getCurrentStock() + ", Batas minimal: " + stock.getThreshold()
                 );
             }
         }
@@ -76,7 +74,7 @@ public class SystemNotificationService {
             createNotification(
                     NotificationType.NEW_USER,
                     user.getId(),
-                    "New User Registration",
+                    "Registrasi Pengguna Baru",
                     "Pengguna " + user.getUsername() + " telah registrasi dan sedang menunggu persetujuan"
             );
 

@@ -31,14 +31,22 @@ public class SystemNotificationController {
     }
 
     @PutMapping("/{id}/read")
-    public ResponseEntity<Void> markAsRead(@PathVariable UUID id) {
-        systemNotificationService.markAsRead(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<APIResponse<Void>> markAsRead(@PathVariable UUID id) {
+        try {
+            systemNotificationService.markAsRead(id);
+            return ResponseEntity.ok(new APIResponse<>(true, "Notifikasi berhasil ditandai", null, null));
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @PutMapping("/read-all")
-    public ResponseEntity<Void> markAllAsRead() {
-        systemNotificationService.markAllAsRead();
-        return ResponseEntity.ok().build();
+    public ResponseEntity<APIResponse<Void>> markAllAsRead() {
+        try {
+            systemNotificationService.markAllAsRead();
+            return ResponseEntity.ok(new APIResponse<>(true, "Seluruh notifikasi berhasil ditandai", null, null));
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 }
