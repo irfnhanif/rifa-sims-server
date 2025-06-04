@@ -19,8 +19,8 @@ public interface ItemStockRepository extends JpaRepository<ItemStock, UUID> {
             "WHERE i.barcode = :barcode")
     List<BarcodeScanResponse> findItemStocksByBarcode(String barcode);
 
-    @Query("SELECT is FROM ItemStock is WHERE is.currentStock < is.threshold")
-    Page<ItemStock> findItemStocksBelowThreshold(Pageable pageable);
+    @Query("SELECT is FROM ItemStock is WHERE (:name IS NULL OR is.item.name = :name) AND is.currentStock < is.threshold")
+    Page<ItemStock> findItemStocksByNameBelowThreshold(String name, Pageable pageable);
 
     @Query("SELECT is FROM ItemStock is WHERE is.currentStock < is.threshold")
     List<ItemStock> findAllItemStocksBelowThreshold();

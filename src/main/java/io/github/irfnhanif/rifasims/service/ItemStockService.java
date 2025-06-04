@@ -43,8 +43,8 @@ public class ItemStockService {
         return itemStockRepository.findAllItemStocksBelowThreshold();
     }
 
-    public List<ItemStock> getPagedItemStocksBelowThreshold(Integer page, Integer size) {
-        return itemStockRepository.findItemStocksBelowThreshold(PageRequest.of(page, size)).getContent();
+    public List<ItemStock> getPagedItemStocksBelowThreshold(String name, Integer page, Integer size) {
+        return itemStockRepository.findItemStocksByNameBelowThreshold(name, PageRequest.of(page, size)).getContent();
     }
 
     public List<BarcodeScanResponse> getItemStocksByBarcode(String barcode) {

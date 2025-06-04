@@ -35,9 +35,9 @@ public class ItemStockController {
     }
 
     @GetMapping("/near-empty")
-    public ResponseEntity<APIResponse<List<ItemStock>>> getItemStocksLessThanThreshold(@RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
+    public ResponseEntity<APIResponse<List<ItemStock>>> getItemStocksLessThanThreshold(@RequestParam(required = false) String name, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
         try {
-            List<ItemStock> itemStocks = itemStockService.getPagedItemStocksBelowThreshold(page, size);
+            List<ItemStock> itemStocks = itemStockService.getPagedItemStocksBelowThreshold(name, page, size);
             return ResponseEntity.ok(new APIResponse<>(true, "Stok barang hampir habis berhasil diambil", itemStocks, null));
         } catch (Exception e) {
             throw new InternalServerException(e.getMessage());
