@@ -11,14 +11,6 @@ spring:
     properties:
       hibernate:
               dialect: org.hibernate.dialect.PostgreSQLDialect
-  web:
-    cors:
-      allowed-origins: "*"
-      allowed-methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-      allowed-headers: "Authorization,Content-Type"
-      exposed-headers: "Authorization"
-      allow-credentials: false
-      max-age: 3600
   security:
     user:
       password:
