@@ -9,7 +9,7 @@ public class LoginRequest {
     private String username;
 
     @NotBlank(message = "Password tidak boleh kosong")
-    @Size(min = 6, max = 100, message = "Password harus memiliki minimal 6 karakter")
+    @Size(min = 8, max = 100, message = "Password harus memiliki minimal 8 karakter")
     private String password;
 
     public String getUsername() {

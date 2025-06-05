@@ -4,6 +4,7 @@ import io.github.irfnhanif.rifasims.dto.APIResponse;
 import io.github.irfnhanif.rifasims.dto.RegisterRequest;
 import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    // jangan lupa translate response.message ke bahasa indo
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -39,6 +41,16 @@ public class AuthController {
         try{
             String token = authService.login(user.getUsername(), user.getPassword());
             return ResponseEntity.ok(new APIResponse<>(true, "Login successfully", token, null));
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<APIResponse<String>> refreshToken(HttpServletRequest request) {
+        try {
+            String token = authService.refreshToken(request);
+            return ResponseEntity.ok(new APIResponse<>(true, "Refresh token successfully", token, null));
         } catch (Exception e) {
             throw new InternalServerErrorException(e.getMessage());
         }

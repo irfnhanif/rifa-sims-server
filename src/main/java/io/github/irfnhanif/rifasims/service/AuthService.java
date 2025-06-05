@@ -7,7 +7,10 @@ import io.github.irfnhanif.rifasims.entity.UserStatus;
 import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.InvalidCredentialsException;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
+import io.github.irfnhanif.rifasims.security.CustomUserDetailsService;
 import io.github.irfnhanif.rifasims.util.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,12 +28,14 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtil jwtUtil,  CustomUserDetailsService userDetailsService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
     }
 
     public User register(RegisterRequest registerRequest) {
@@ -60,6 +65,39 @@ public class AuthService {
             // Only handle credential-related exceptions
             throw new BadRequestException("Invalid username or password");
         }
-        // Let other exceptions propagate to get better error information
+    }
+
+    public String refreshToken(HttpServletRequest request) {
+        String refreshToken = extractRefreshTokenFromRequest(request);
+
+        if (refreshToken == null) {
+            throw new BadRequestException("Refresh token not found");
+        }
+
+        String username = jwtUtil.validateRefreshTokenAndGetUsername(refreshToken);
+        if (username == null) {
+            throw new BadRequestException("Invalid refresh token");
+        }
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        return jwtUtil.generateToken(userDetails);
+    }
+
+    public String extractRefreshTokenFromRequest(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        String header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+
+        return null;
     }
 }
