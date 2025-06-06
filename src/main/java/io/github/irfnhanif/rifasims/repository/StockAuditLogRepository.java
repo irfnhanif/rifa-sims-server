@@ -12,4 +12,9 @@ import java.util.UUID;
 
 public interface StockAuditLogRepository  extends JpaRepository<StockAuditLog, UUID>, JpaSpecificationExecutor<StockAuditLog> {
     List<StockAuditLog> findAllByItemNameAndItemBarcodeAndTimestampBetween(String name, String barcode, LocalDateTime fromDate, LocalDateTime toDate);
+
+    List<StockAuditLog> findAllByItemName(String name);
+
+    List<StockAuditLog> findAllByItemBarcode(String barcode);
+
 }

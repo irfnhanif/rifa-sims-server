@@ -79,6 +79,14 @@ public class StockAuditLogService {
         return stockAuditLogRepository.findAllByItemNameAndItemBarcodeAndTimestampBetween(item.getName(), item.getBarcode(), fromDate, toDate);
     }
 
+    public List<StockAuditLog> getStockAuditLogsByItemName(String name) {
+        return stockAuditLogRepository.findAllByItemName(name);
+    }
+
+    public List<StockAuditLog> getStockAuditLogsByItemBarcode(String barcode) {
+        return stockAuditLogRepository.findAllByItemBarcode(barcode);
+    }
+
     public StockAuditLog getStockAuditLogById(UUID stockAuditLogId) {
         return stockAuditLogRepository.findById(stockAuditLogId).orElseThrow(() -> new ResourceNotFoundException("Stock Audit Log Not Found"));
     }
@@ -96,6 +104,10 @@ public class StockAuditLogService {
         stockAuditLog.setDeleted(false);
         stockAuditLog.setDeletedTimestamp(null);
         return stockAuditLogRepository.save(stockAuditLog);
+    }
+
+    public void saveStockAuditLog(StockAuditLog stockAuditLog) {
+        stockAuditLogRepository.save(stockAuditLog);
     }
 
     public void deleteStockAuditLog(UUID stockAuditLogId) {

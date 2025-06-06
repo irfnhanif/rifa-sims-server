@@ -78,8 +78,22 @@ public class ItemService {
     }
 
     public Item updateItem(UUID itemId, Item item) {
-        if (!itemRepository.existsById(itemId)) {
-            throw new ResourceNotFoundException("Item not found");
+        Item existingItem = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+
+        if (!existingItem.getName().equals(item.getName())) {
+            List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByItemName(existingItem.getName());
+            for (StockAuditLog stockAuditLog : stockAuditLogs) {
+                stockAuditLog.setItemName(item.getName());
+                stockAuditLogService.saveStockAuditLog(stockAuditLog);
+            }
+        }
+
+        if (!existingItem.getBarcode().equals(item.getBarcode())) {
+            List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByItemBarcode(existingItem.getBarcode());
+            for (StockAuditLog stockAuditLog : stockAuditLogs) {
+                stockAuditLog.setItemBarcode(item.getBarcode());
+                stockAuditLogService.saveStockAuditLog(stockAuditLog);
+            }
         }
         item.setId(itemId);
         return itemRepository.save(item);
