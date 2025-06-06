@@ -46,6 +46,10 @@ public class UserService {
         return pendingUsers;
     }
 
+    public User getUserById(UUID id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
     public User updateUser(UUID userId, User user) {
         User existingUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -89,5 +93,15 @@ public class UserService {
         String username = authentication.getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    public void deleteUser(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!getCurrentUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You are not allowed to delete other user account");
+        }
+
+        userRepository.deleteById(userId);
     }
 }

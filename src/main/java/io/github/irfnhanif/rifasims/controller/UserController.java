@@ -38,6 +38,13 @@ public class UserController {
         List<User> users = userService.getPendingUsers();
         return ResponseEntity.ok(new APIResponse<>(true, "Pending users retrieved successfully", users, null));
     }
+    // kurang getById dan delete
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<APIResponse<User>> getUser(@PathVariable("userId") UUID userId) {
+        User user =  userService.getUserById(userId);
+        return ResponseEntity.ok(new APIResponse<>(true, "Successfully retrieved user", user, null));
+    }
 
     @PutMapping("/{userId}")
     public ResponseEntity<APIResponse<User>> updateUser(@PathVariable UUID userId, @RequestBody User user) {
@@ -57,5 +64,12 @@ public class UserController {
         User rejectedUser = userService.rejectUser(userId);
         String response = String.format("User %s rejected successfully", rejectedUser.getUsername());
         return ResponseEntity.ok(new APIResponse<>(true, "User rejected successfully", response, null));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable UUID userId) {
+        userService.deleteUser(userId);
+
+        return ResponseEntity.ok(new APIResponse<>(true, "User deleted successfully", null, null));
     }
 }
