@@ -17,6 +17,13 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<APIResponse<Void>> handleGenericException(Exception e) {
+        APIResponse<Void> response = new APIResponse<>(false, "Internal server error", null,
+                Collections.singletonList(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<APIResponse<Void>> handleResourceNotFoundException(ResourceNotFoundException e) {
         APIResponse<Void> response = new APIResponse<>(false, e.getMessage(), null, Collections.singletonList(e.getMessage()));
