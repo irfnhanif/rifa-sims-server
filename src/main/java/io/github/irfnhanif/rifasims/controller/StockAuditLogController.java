@@ -34,21 +34,13 @@ public class StockAuditLogController {
                                                               @RequestParam(required = false) String sortBy,
                                                               @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
                                                               @RequestParam(required = false) Boolean deleted) {
-        try {
-            Map<String, Object> logs = stockAuditLogService.getStockAuditLogs(itemName, username, changeTypes, fromDate, toDate, page, size, sortBy, sortDirection, deleted);
-            return ResponseEntity.ok(new APIResponse<>(true, "Stock audit log retrieved successfully", logs, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
+        Map<String, Object> logs = stockAuditLogService.getStockAuditLogs(itemName, username, changeTypes, fromDate, toDate, page, size, sortBy, sortDirection, deleted);
+        return ResponseEntity.ok(new APIResponse<>(true, "Stock audit log retrieved successfully", logs, null));
     }
 
     @DeleteMapping("/{logId}")
     public ResponseEntity<APIResponse<Void>> deleteStockAuditLog(@PathVariable UUID logId) {
-        try {
-            stockAuditLogService.deleteStockAuditLog(logId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Stock audit log deleted successfully", null, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
+        stockAuditLogService.deleteStockAuditLog(logId);
+        return ResponseEntity.ok(new APIResponse<>(true, "Stock audit log deleted successfully", null, null));
     }
 }

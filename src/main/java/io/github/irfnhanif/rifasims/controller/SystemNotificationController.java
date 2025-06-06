@@ -22,31 +22,19 @@ public class SystemNotificationController {
 
     @GetMapping("")
     public ResponseEntity<APIResponse<List<SystemNotification>>> getNotifications() {
-        try {
-            List<SystemNotification> notifications = systemNotificationService.getNotificationsForOwner();
-            return ResponseEntity.ok(new APIResponse<>(true, "Berhasil mengambil data notifikasi", notifications, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
+        List<SystemNotification> notifications = systemNotificationService.getNotificationsForOwner();
+        return ResponseEntity.ok(new APIResponse<>(true, "Berhasil mengambil data notifikasi", notifications, null));
     }
 
     @PutMapping("/{id}/read")
     public ResponseEntity<APIResponse<Void>> markAsRead(@PathVariable UUID id) {
-        try {
-            systemNotificationService.markAsRead(id);
-            return ResponseEntity.ok(new APIResponse<>(true, "Notifikasi berhasil ditandai", null, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
+        systemNotificationService.markAsRead(id);
+        return ResponseEntity.ok(new APIResponse<>(true, "Notifikasi berhasil ditandai", null, null));
     }
 
     @PutMapping("/read-all")
     public ResponseEntity<APIResponse<Void>> markAllAsRead() {
-        try {
-            systemNotificationService.markAllAsRead();
-            return ResponseEntity.ok(new APIResponse<>(true, "Seluruh notifikasi berhasil ditandai", null, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
+        systemNotificationService.markAllAsRead();
+        return ResponseEntity.ok(new APIResponse<>(true, "Seluruh notifikasi berhasil ditandai", null, null));
     }
 }

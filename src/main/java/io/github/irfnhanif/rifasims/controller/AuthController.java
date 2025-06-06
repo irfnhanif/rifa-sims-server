@@ -30,13 +30,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<APIResponse<String>> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        try {
-            User registeredUser = authService.register(registerRequest);
-            String registerMessage = String.format("Pengguna terdaftar: %s", registeredUser.getUsername());
-            return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(true, "Registrasi berhasil, tunggu persetujuan pemilik (OWNER)", registerMessage, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
+        User registeredUser = authService.register(registerRequest);
+        String registerMessage = String.format("Pengguna terdaftar: %s", registeredUser.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(true, "Registrasi berhasil, tunggu persetujuan pemilik (OWNER)", registerMessage, null));
     }
 
     @PostMapping("/login")
@@ -56,11 +52,7 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<APIResponse<String>> refreshToken(HttpServletRequest request) {
-        try {
-            String token = authService.refreshToken(request);
-            return ResponseEntity.ok(new APIResponse<>(true, "Refresh token successfully", token, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
+        String token = authService.refreshToken(request);
+        return ResponseEntity.ok(new APIResponse<>(true, "Refresh token successfully", token, null));
     }
 }

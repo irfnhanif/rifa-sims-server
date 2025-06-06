@@ -36,55 +36,35 @@ public class ItemStockController {
 
     @GetMapping("/near-empty")
     public ResponseEntity<APIResponse<List<ItemStock>>> getItemStocksLessThanThreshold(@RequestParam(required = false) String name, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
-        try {
-            List<ItemStock> itemStocks = itemStockService.getPagedItemStocksBelowThreshold(name, page, size);
-            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang hampir habis berhasil diambil", itemStocks, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
+        List<ItemStock> itemStocks = itemStockService.getPagedItemStocksBelowThreshold(name, page, size);
+        return ResponseEntity.ok(new APIResponse<>(true, "Stok barang hampir habis berhasil diambil", itemStocks, null));
     }
 
     @GetMapping("/barcode/{barcode}")
     public ResponseEntity<APIResponse<List<BarcodeScanResponse>>> getItemByBarcode(@PathVariable String barcode) {
-        try {
-            if (barcode == null || barcode.isEmpty()) {
-                throw new BadRequestException("Barcode tidak boleh kosong");
-            }
-
-            List<BarcodeScanResponse> responses = itemStockService.getItemStocksByBarcode(barcode);
-            return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diambil", responses, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
+        if (barcode == null || barcode.isEmpty()) {
+            throw new BadRequestException("Barcode tidak boleh kosong");
         }
+
+        List<BarcodeScanResponse> responses = itemStockService.getItemStocksByBarcode(barcode);
+        return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diambil", responses, null));
     }
 
     @GetMapping("/{itemStockId}")
     public ResponseEntity<APIResponse<ItemStock>> getItemStock(@PathVariable UUID itemStockId) {
-        try {
-            ItemStock itemStock = itemStockService.getItemStockById(itemStockId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil diambil", itemStock, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
+        ItemStock itemStock = itemStockService.getItemStockById(itemStockId);
+        return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil diambil", itemStock, null));
     }
 
     @PutMapping("/{itemStockId}")
     public ResponseEntity<APIResponse<ItemStock>> updateItemStock(@PathVariable UUID itemStockId, @RequestBody EditStockChangeRequest editStockChangeRequest) {
-        try {
-            ItemStock updatedItemStock = itemStockService.updateItemStockChange(itemStockId, editStockChangeRequest);
-            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil diperbarui", updatedItemStock, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
+        ItemStock updatedItemStock = itemStockService.updateItemStockChange(itemStockId, editStockChangeRequest);
+        return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil diperbarui", updatedItemStock, null));
     }
 
     @PatchMapping("/{itemStockId}/scan")
     public ResponseEntity<APIResponse<ItemStock>> scanItemStock(@PathVariable UUID itemStockId, @RequestBody ScanStockChangeRequest scanStockChangeRequest) {
-        try {
-            ItemStock scannedItemStock = itemStockService.updateScanItemStockChange(itemStockId, scanStockChangeRequest);
-            return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil dipindai", scannedItemStock, null));
-        } catch (Exception e) {
-            throw new InternalServerException(e.getMessage());
-        }
+        ItemStock scannedItemStock = itemStockService.updateScanItemStockChange(itemStockId, scanStockChangeRequest);
+        return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil dipindai", scannedItemStock, null));
     }
 }
