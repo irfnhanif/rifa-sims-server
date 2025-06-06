@@ -9,10 +9,13 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -41,8 +44,13 @@ public class AuthController {
         try{
             String token = authService.login(user.getUsername(), user.getPassword());
             return ResponseEntity.ok(new APIResponse<>(true, "Login successfully", token, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
+        } catch (BadCredentialsException e) {
+            if (e.getMessage().contains("Wait for owner approval")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(false, "Tunggu Persetujuan Pemilik (OWNER)",
+                                null, List.of("Your account exists but is waiting for approval")));
+            }
+            throw e;
         }
     }
 

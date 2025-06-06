@@ -1,8 +1,11 @@
 package io.github.irfnhanif.rifasims.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.irfnhanif.rifasims.dto.APIResponse;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
 import io.github.irfnhanif.rifasims.security.CustomUserDetailsService;
 import io.github.irfnhanif.rifasims.security.JwtRequestFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -42,6 +46,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint()))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -64,6 +69,32 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+            String message = "Username atau password salah";
+            String details = "Login gagal: " + authException.getMessage();
+
+            if (authException.getMessage() != null && authException.getMessage().contains("Wait for owner approval")) {
+                message = "Wait for owner approval";
+                details = "Your account exists but is waiting for approval";
+            }
+
+            APIResponse<String> apiResponse = new APIResponse<>(
+                    false,
+                    message,
+                    null,
+                    List.of(details)
+            );
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getOutputStream(), apiResponse);
+        };
     }
 
     @Bean

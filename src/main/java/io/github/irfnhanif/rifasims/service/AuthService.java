@@ -50,20 +50,21 @@ public class AuthService {
 
     public String login(String username, String password) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
-            );
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+                    .orElseThrow(() -> new BadCredentialsException("User not found"));
+
             if (user.getStatus() == UserStatus.PENDING) {
-                throw new InvalidCredentialsException("Wait for owner approval");
+                throw new BadCredentialsException("Wait for owner approval");
             }
+
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             return jwtUtil.generateToken(userDetails);
         } catch (BadCredentialsException e) {
-            // Only handle credential-related exceptions
-            throw new BadRequestException("Invalid username or password");
+            throw new BadCredentialsException(e.getMessage());
         }
     }
 
@@ -94,7 +95,7 @@ public class AuthService {
         }
 
         String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
+        if (header != null || !header.startsWith("Bearer ")) {
             return header.substring(7);
         }
 
