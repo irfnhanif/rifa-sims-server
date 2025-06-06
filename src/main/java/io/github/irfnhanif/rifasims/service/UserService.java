@@ -3,6 +3,8 @@ package io.github.irfnhanif.rifasims.service;
 import io.github.irfnhanif.rifasims.entity.StockAuditLog;
 import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.entity.UserStatus;
+import io.github.irfnhanif.rifasims.exception.AccessDeniedException;
+import io.github.irfnhanif.rifasims.exception.InvalidCredentialsException;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -35,6 +37,10 @@ public class UserService {
 
     public User updateUser(UUID userId, User user) {
         User existingUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!getCurrentUser().getId().equals(existingUser.getId())) {
+            throw new AccessDeniedException("You are not allowed to update other user account");
+        }
 
         if (!existingUser.getUsername().equals(user.getUsername())) {
             List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByUsername(existingUser.getUsername());

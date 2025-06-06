@@ -42,8 +42,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    @ExceptionHandler(io.github.irfnhanif.rifasims.exception.AccessDeniedException.class)
     public ResponseEntity<APIResponse<Void>> handleAccessDeniedException(AccessDeniedException e) {
+        APIResponse<Void> response = new APIResponse<>(false, e.getMessage(), null, Collections.singletonList(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<APIResponse<Void>> handleOrganicAccessDeniedException(AccessDeniedException e) {
         APIResponse<Void> response = new APIResponse<>(false, e.getMessage(), null, Collections.singletonList(e.getMessage()));
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
