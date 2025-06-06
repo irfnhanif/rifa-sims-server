@@ -87,6 +87,10 @@ public class StockAuditLogService {
         return stockAuditLogRepository.findAllByItemBarcode(barcode);
     }
 
+    public List<StockAuditLog> getStockAuditLogsByUsername(String username) {
+        return stockAuditLogRepository.findAllByUsername(username);
+    }
+
     public StockAuditLog getStockAuditLogById(UUID stockAuditLogId) {
         return stockAuditLogRepository.findById(stockAuditLogId).orElseThrow(() -> new ResourceNotFoundException("Stock Audit Log Not Found"));
     }

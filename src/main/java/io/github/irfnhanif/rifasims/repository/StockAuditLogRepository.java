@@ -17,4 +17,5 @@ public interface StockAuditLogRepository  extends JpaRepository<StockAuditLog, U
 
     List<StockAuditLog> findAllByItemBarcode(String barcode);
 
+    List<StockAuditLog> findAllByUsername(String username);
 }

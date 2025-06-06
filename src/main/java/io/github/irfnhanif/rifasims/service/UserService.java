@@ -1,5 +1,6 @@
 package io.github.irfnhanif.rifasims.service;
 
+import io.github.irfnhanif.rifasims.entity.StockAuditLog;
 import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.entity.UserStatus;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
@@ -15,8 +16,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
-    public UserService(UserRepository userRepository) {
+    private final StockAuditLogService stockAuditLogService;
+
+    public UserService(UserRepository userRepository,  StockAuditLogService stockAuditLogService) {
         this.userRepository = userRepository;
+        this.stockAuditLogService = stockAuditLogService;
     }
 
     public List<User> getPendingUsers() {
@@ -27,6 +31,22 @@ public class UserService {
     public List<User> getPendingUsersAndAddedToNotificationFalse() {
         List<User> pendingUsers = userRepository.findByStatusAndAddedToNotificationFalse(UserStatus.PENDING);
         return pendingUsers;
+    }
+
+    public User updateUser(UUID userId, User user) {
+        User existingUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!existingUser.getUsername().equals(user.getUsername())) {
+            List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByUsername(existingUser.getUsername());
+
+            for (StockAuditLog stockAuditLog : stockAuditLogs) {
+                stockAuditLog.setUsername(user.getUsername());
+                stockAuditLogService.saveStockAuditLog(stockAuditLog);
+            }
+        }
+
+        user.setId(existingUser.getId());
+        return userRepository.save(user);
     }
 
     public void setUserAddedToNotificationTrue(UUID id) {

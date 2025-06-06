@@ -27,33 +27,27 @@ public class UserController {
 
     @GetMapping("/pending")
     public ResponseEntity<APIResponse<List<User>>> getPendingUsers() {
-        try {
-            List<User> users = userService.getPendingUsers();
-            return ResponseEntity.ok(new APIResponse<>(true, "Pending users retrieved successfully", users, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
+        List<User> users = userService.getPendingUsers();
+        return ResponseEntity.ok(new APIResponse<>(true, "Pending users retrieved successfully", users, null));
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<APIResponse<User>> updateUser(@PathVariable UUID userId, @RequestBody User user) {
+        User updatedUser = userService.updateUser(userId, user);
+        return ResponseEntity.ok(new APIResponse<>(true, "User updated successfully", updatedUser, null));
     }
 
     @PatchMapping("/{userId}/accept")
     public ResponseEntity<APIResponse<String>> acceptUser(@PathVariable UUID userId) {
-        try {
-            User acceptedUser = userService.acceptUser(userId);
-            String response = String.format("User %s accepted successfully", acceptedUser.getUsername());
-            return ResponseEntity.ok(new APIResponse<>(true, "User accepted successfully", response, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
+        User acceptedUser = userService.acceptUser(userId);
+        String response = String.format("User %s accepted successfully", acceptedUser.getUsername());
+        return ResponseEntity.ok(new APIResponse<>(true, "User accepted successfully", response, null));
     }
 
     @PatchMapping("/{userId}/reject")
     public ResponseEntity<APIResponse<String>> rejectUser(@PathVariable UUID userId) {
-        try {
-            User rejectedUser = userService.rejectUser(userId);
-            String response = String.format("User %s rejected successfully", rejectedUser.getUsername());
-            return ResponseEntity.ok(new APIResponse<>(true, "User rejected successfully", response, null));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e.getMessage());
-        }
+        User rejectedUser = userService.rejectUser(userId);
+        String response = String.format("User %s rejected successfully", rejectedUser.getUsername());
+        return ResponseEntity.ok(new APIResponse<>(true, "User rejected successfully", response, null));
     }
 }
