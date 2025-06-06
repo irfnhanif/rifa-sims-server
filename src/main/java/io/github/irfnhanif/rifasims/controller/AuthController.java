@@ -32,8 +32,8 @@ public class AuthController {
     public ResponseEntity<APIResponse<String>> register(@Valid @RequestBody RegisterRequest registerRequest) {
         try {
             User registeredUser = authService.register(registerRequest);
-            String registerMessage = String.format("Registered user: %s", registeredUser.getUsername());
-            return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(true, "Register successfully, Please wait confirmation from owner", registerMessage, null));
+            String registerMessage = String.format("Pengguna terdaftar: %s", registeredUser.getUsername());
+            return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(true, "Registrasi berhasil, tunggu persetujuan pemilik (OWNER)", registerMessage, null));
         } catch (Exception e) {
             throw new InternalServerErrorException(e.getMessage());
         }
