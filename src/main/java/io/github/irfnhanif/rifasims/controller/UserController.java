@@ -25,6 +25,14 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("")
+    public ResponseEntity<APIResponse<List<User>>> getAllUsers(@RequestParam(required = false) String name,
+                                                               @RequestParam(required = false, defaultValue = "0") Integer page,
+                                                               @RequestParam(required = false, defaultValue = "10") Integer size) {
+        List<User> users = userService.getAllUsers(name, page, size);
+        return ResponseEntity.ok(new APIResponse<>(true, "Successfully retrieved users", users, null ));
+    }
+
     @GetMapping("/pending")
     public ResponseEntity<APIResponse<List<User>>> getPendingUsers() {
         List<User> users = userService.getPendingUsers();

@@ -1,5 +1,6 @@
 package io.github.irfnhanif.rifasims.service;
 
+import io.github.irfnhanif.rifasims.entity.Item;
 import io.github.irfnhanif.rifasims.entity.StockAuditLog;
 import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.entity.UserStatus;
@@ -7,6 +8,8 @@ import io.github.irfnhanif.rifasims.exception.AccessDeniedException;
 import io.github.irfnhanif.rifasims.exception.InvalidCredentialsException;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,14 @@ public class UserService {
     public UserService(UserRepository userRepository,  StockAuditLogService stockAuditLogService) {
         this.userRepository = userRepository;
         this.stockAuditLogService = stockAuditLogService;
+    }
+
+    public List<User> getAllUsers(String name, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (name != null) {
+            return userRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
+        }
+        return userRepository.findAll(pageable).getContent();
     }
 
     public List<User> getPendingUsers() {
