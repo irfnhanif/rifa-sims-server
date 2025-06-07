@@ -30,7 +30,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtil jwtUtil,  CustomUserDetailsService userDetailsService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -40,6 +40,11 @@ public class AuthService {
 
     public User register(RegisterRequest registerRequest) {
         User newUser = new User();
+
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new BadRequestException("Username already exists");
+        }
+
         newUser.setUsername(registerRequest.getUsername());
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         newUser.setBranch(registerRequest.getBranch());

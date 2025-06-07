@@ -1,10 +1,9 @@
 package io.github.irfnhanif.rifasims.service;
 
-import io.github.irfnhanif.rifasims.entity.Item;
-import io.github.irfnhanif.rifasims.entity.StockAuditLog;
-import io.github.irfnhanif.rifasims.entity.User;
-import io.github.irfnhanif.rifasims.entity.UserStatus;
+import io.github.irfnhanif.rifasims.dto.EditUserRequest;
+import io.github.irfnhanif.rifasims.entity.*;
 import io.github.irfnhanif.rifasims.exception.AccessDeniedException;
+import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.InvalidCredentialsException;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
@@ -31,7 +30,7 @@ public class UserService {
     public List<User> getAllUsers(String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         if (name != null) {
-            return userRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
+            return userRepository.findByUsernameContainingIgnoreCase(name, pageable).getContent();
         }
         return userRepository.findAll(pageable).getContent();
     }
@@ -46,28 +45,35 @@ public class UserService {
         return pendingUsers;
     }
 
-    public User getUserById(UUID id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    public User updateUser(UUID userId, User user) {
+    public User updateUser(UUID userId, EditUserRequest editUserRequest) {
         User existingUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!getCurrentUser().getId().equals(existingUser.getId())) {
             throw new AccessDeniedException("You are not allowed to update other user account");
         }
 
-        if (!existingUser.getUsername().equals(user.getUsername())) {
+        if (!existingUser.getUsername().equals(editUserRequest.getUsername())) {
+            if (userRepository.findByUsername(editUserRequest.getUsername()).isPresent()) {
+                throw new BadRequestException("Username already exists");
+            }
+
             List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByUsername(existingUser.getUsername());
 
-            for (StockAuditLog stockAuditLog : stockAuditLogs) {
-                stockAuditLog.setUsername(user.getUsername());
-                stockAuditLogService.saveStockAuditLog(stockAuditLog);
+            if (!stockAuditLogs.isEmpty()) {
+                for (StockAuditLog stockAuditLog : stockAuditLogs) {
+                    stockAuditLog.setUsername(editUserRequest.getUsername());
+                }
+                stockAuditLogService.saveStockAuditLogs(stockAuditLogs);
             }
         }
 
-        user.setId(existingUser.getId());
-        return userRepository.save(user);
+        existingUser.setUsername(editUserRequest.getUsername());
+        existingUser.setBranch(editUserRequest.getBranch());
+        return userRepository.save(existingUser);
     }
 
     public void setUserAddedToNotificationTrue(UUID id) {
@@ -84,8 +90,8 @@ public class UserService {
 
     public User rejectUser(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        user.setStatus(UserStatus.REJECTED);
-        return userRepository.save(user);
+        deleteUser(userId);
+        return user;
     }
 
     public User getCurrentUser() {
@@ -98,8 +104,8 @@ public class UserService {
     public void deleteUser(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (!getCurrentUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("You are not allowed to delete other user account");
+        if (getCurrentUser().getRole() != UserRole.OWNER) {
+            throw new AccessDeniedException("You are not allowed to delete other employee account");
         }
 
         userRepository.deleteById(userId);

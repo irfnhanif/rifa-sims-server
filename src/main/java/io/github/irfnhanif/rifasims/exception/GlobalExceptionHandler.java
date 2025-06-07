@@ -2,10 +2,14 @@ package io.github.irfnhanif.rifasims.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import io.github.irfnhanif.rifasims.dto.APIResponse;
+import jakarta.transaction.RollbackException;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,12 +19,36 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIResponse<Void>> handleGenericException(Exception e) {
-        APIResponse<Void> response = new APIResponse<>(false, "Internal server error", null,
-                Collections.singletonList(e.getMessage()));
+        log.error("Exception caught:", e);
+
+        String message = "Internal server error";
+        String detailedMessage = e.getMessage();
+
+        // Extract root cause for transaction exceptions
+        if (e instanceof TransactionSystemException) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RollbackException && cause.getCause() != null) {
+                // This is typically where validation errors are
+                Throwable rootCause = cause.getCause();
+                log.error("Root cause:", rootCause);
+
+                if (rootCause instanceof ConstraintViolationException) {
+                    detailedMessage = "Constraint violation: " +
+                            ((ConstraintViolationException) rootCause).getConstraintName() + " - " +
+                            rootCause.getMessage();
+                } else {
+                    detailedMessage = rootCause.getMessage();
+                }
+            }
+        }
+
+        APIResponse<Void> response = new APIResponse<>(false, message, null,
+                Collections.singletonList(detailedMessage));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
@@ -38,6 +66,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<APIResponse<Void>> handleInvalidCredentialsException(InvalidCredentialsException e) {
+        System.out.println("Exception caught in GlobalExceptionHandler: \n" + e);
         APIResponse<Void> response = new APIResponse<>(false, e.getMessage(), null, Collections.singletonList(e.getMessage()));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
@@ -52,12 +81,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<APIResponse<Void>> handleOrganicAccessDeniedException(AccessDeniedException e) {
         APIResponse<Void> response = new APIResponse<>(false, e.getMessage(), null, Collections.singletonList(e.getMessage()));
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-    }
-
-    @ExceptionHandler(InternalServerException.class)
-    public ResponseEntity<APIResponse<Void>> handleInternalServerException(InternalServerException e) {
-        APIResponse<Void> response = new APIResponse<>(false, e.getMessage(), null, Collections.singletonList(e.getMessage()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

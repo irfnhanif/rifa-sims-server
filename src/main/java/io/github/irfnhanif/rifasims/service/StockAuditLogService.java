@@ -110,8 +110,8 @@ public class StockAuditLogService {
         return stockAuditLogRepository.save(stockAuditLog);
     }
 
-    public void saveStockAuditLog(StockAuditLog stockAuditLog) {
-        stockAuditLogRepository.save(stockAuditLog);
+    public void saveStockAuditLogs(List<StockAuditLog> stockAuditLogs) {
+        stockAuditLogRepository.saveAll(stockAuditLogs);
     }
 
     public void deleteStockAuditLog(UUID stockAuditLogId) {

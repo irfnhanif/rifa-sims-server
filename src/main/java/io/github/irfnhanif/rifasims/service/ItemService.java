@@ -83,18 +83,23 @@ public class ItemService {
         if (!existingItem.getName().equals(item.getName())) {
             List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByItemName(existingItem.getName());
 
-            for (StockAuditLog stockAuditLog : stockAuditLogs) {
-                stockAuditLog.setItemName(item.getName());
-                stockAuditLogService.saveStockAuditLog(stockAuditLog);
+            if (!stockAuditLogs.isEmpty()) {
+                for (StockAuditLog stockAuditLog : stockAuditLogs) {
+                    stockAuditLog.setItemName(item.getName());
+                }
+                stockAuditLogService.saveStockAuditLogs(stockAuditLogs);
             }
+
         }
 
         if (!existingItem.getBarcode().equals(item.getBarcode())) {
             List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByItemBarcode(existingItem.getBarcode());
 
-            for (StockAuditLog stockAuditLog : stockAuditLogs) {
-                stockAuditLog.setItemBarcode(item.getBarcode());
-                stockAuditLogService.saveStockAuditLog(stockAuditLog);
+            if (!stockAuditLogs.isEmpty()) {
+                for (StockAuditLog stockAuditLog : stockAuditLogs) {
+                    stockAuditLog.setItemBarcode(item.getBarcode());
+                }
+                stockAuditLogService.saveStockAuditLogs(stockAuditLogs);
             }
         }
         item.setId(itemId);
