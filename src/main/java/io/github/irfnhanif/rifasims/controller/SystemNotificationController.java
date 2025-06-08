@@ -5,6 +5,7 @@ import io.github.irfnhanif.rifasims.entity.SystemNotification;
 import io.github.irfnhanif.rifasims.service.SystemNotificationService;
 import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/notifications")
+@PreAuthorize("hasAuthority('OWNER')")
 public class SystemNotificationController {
 
     private final SystemNotificationService systemNotificationService;

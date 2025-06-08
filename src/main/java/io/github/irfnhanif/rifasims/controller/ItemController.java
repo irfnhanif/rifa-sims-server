@@ -9,6 +9,7 @@ import io.github.irfnhanif.rifasims.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-    //    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping("")
     public ResponseEntity<APIResponse<Item>> createItem(@Valid  @RequestBody CreateItemRequest createItemRequest) {
         Item createdItem = itemService.createItem(createItemRequest);
@@ -58,14 +59,14 @@ public class ItemController {
     }
 
 
-    //    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("/{itemId}")
     public ResponseEntity<APIResponse<Item>> updateItem(@PathVariable UUID itemId, @Valid @RequestBody Item item) {
         Item updatedItem = itemService.updateItem(itemId, item);
         return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diperbarui", updatedItem, null));
     }
 
-    //    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @DeleteMapping("/{itemId}")
     public ResponseEntity<APIResponse<Void>> deleteItem(@PathVariable UUID itemId) {
         itemService.deleteItem(itemId);

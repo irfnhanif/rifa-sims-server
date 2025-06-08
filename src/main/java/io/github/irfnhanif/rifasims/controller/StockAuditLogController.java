@@ -1,9 +1,7 @@
 package io.github.irfnhanif.rifasims.controller;
 
 import io.github.irfnhanif.rifasims.dto.APIResponse;
-import io.github.irfnhanif.rifasims.entity.StockAuditLog;
 import io.github.irfnhanif.rifasims.entity.StockChangeType;
-import io.github.irfnhanif.rifasims.exception.InternalServerException;
 import io.github.irfnhanif.rifasims.service.StockAuditLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +14,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/logs")
 public class StockAuditLogController {
-    // jangan lupa translate response.message ke bahasa indo
     private final StockAuditLogService stockAuditLogService;
 
     public StockAuditLogController(StockAuditLogService stockAuditLogService) {

@@ -7,6 +7,7 @@ import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.security.CustomUserDetailsService;
 import io.github.irfnhanif.rifasims.service.UserService;
 import io.github.irfnhanif.rifasims.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,19 +18,19 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
-@PreAuthorize("hasAuthority('OWNER')")
 public class UserController {
     // jangan lupa translate response.message ke bahasa indo
     private final UserService userService;
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService, CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
+    public UserController(UserService userService, @Autowired CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("")
     public ResponseEntity<APIResponse<List<User>>> getAllUsers(@RequestParam(required = false) String name,
                                                                @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -37,13 +38,6 @@ public class UserController {
         List<User> users = userService.getAllUsers(name, page, size);
         return ResponseEntity.ok(new APIResponse<>(true, "Successfully retrieved users", users, null ));
     }
-
-    @GetMapping("/pending")
-    public ResponseEntity<APIResponse<List<User>>> getPendingUsers() {
-        List<User> users = userService.getPendingUsers();
-        return ResponseEntity.ok(new APIResponse<>(true, "Pending users retrieved successfully", users, null));
-    }
-    // kurang getById dan delete
 
     @GetMapping("/username/{username}")
     public ResponseEntity<APIResponse<User>> getUserByUserName(@PathVariable("username") String username) {
@@ -63,6 +57,7 @@ public class UserController {
         return ResponseEntity.ok(new APIResponse<>(true, "User updated successfully", response, null));
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @PatchMapping("/{userId}/accept")
     public ResponseEntity<APIResponse<String>> acceptUser(@PathVariable UUID userId) {
         User acceptedUser = userService.acceptUser(userId);
@@ -70,6 +65,7 @@ public class UserController {
         return ResponseEntity.ok(new APIResponse<>(true, "User accepted successfully", response, null));
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @PatchMapping("/{userId}/reject")
     public ResponseEntity<APIResponse<String>> rejectUser(@PathVariable UUID userId) {
         User rejectedUser = userService.rejectUser(userId);
@@ -77,6 +73,7 @@ public class UserController {
         return ResponseEntity.ok(new APIResponse<>(true, "User rejected successfully", response, null));
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable UUID userId) {
         userService.deleteUser(userId);

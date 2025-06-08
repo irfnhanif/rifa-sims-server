@@ -9,6 +9,7 @@ import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.InternalServerException;
 import io.github.irfnhanif.rifasims.service.ItemStockService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,11 +52,12 @@ public class ItemStockController {
     }
 
     @GetMapping("/{itemStockId}")
-    public ResponseEntity<APIResponse<ItemStock>> getItemStock(@PathVariable UUID itemStockId) {
+    public ResponseEntity<APIResponse<ItemStock>> getItemStockById(@PathVariable UUID itemStockId) {
         ItemStock itemStock = itemStockService.getItemStockById(itemStockId);
         return ResponseEntity.ok(new APIResponse<>(true, "Stok barang berhasil diambil", itemStock, null));
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("/{itemStockId}")
     public ResponseEntity<APIResponse<ItemStock>> updateItemStock(@PathVariable UUID itemStockId, @RequestBody EditStockChangeRequest editStockChangeRequest) {
         ItemStock updatedItemStock = itemStockService.updateItemStockChange(itemStockId, editStockChangeRequest);
