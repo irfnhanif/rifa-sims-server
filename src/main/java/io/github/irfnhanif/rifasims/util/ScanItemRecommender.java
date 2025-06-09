@@ -56,6 +56,7 @@ public class ScanItemRecommender {
             return Collections.singletonList(new RecommendedBarcodeScanResponse(
                     singleItemStock.getId().toString(),
                     singleItemStock.getItem().getName(),
+                    singleItemStock.getCurrentStock(),
                     "1.00"
             ));
         }
@@ -112,6 +113,7 @@ public class ScanItemRecommender {
                 .map(rankedItem -> new RecommendedBarcodeScanResponse(
                         rankedItem.itemStock.getId().toString(),
                         rankedItem.itemStock.getItem().getName(),
+                        rankedItem.itemStock.getCurrentStock(),
                         String.format("%.2f", rankedItem.score) // Format score to 2 decimal places
                 ))
                 .collect(Collectors.toList());

@@ -1,9 +1,6 @@
 package io.github.irfnhanif.rifasims.controller;
 
-import io.github.irfnhanif.rifasims.dto.APIResponse;
-import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
-import io.github.irfnhanif.rifasims.dto.EditStockChangeRequest;
-import io.github.irfnhanif.rifasims.dto.ScanStockChangeRequest;
+import io.github.irfnhanif.rifasims.dto.*;
 import io.github.irfnhanif.rifasims.entity.ItemStock;
 import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.InternalServerException;
@@ -50,6 +47,17 @@ public class ItemStockController {
         List<BarcodeScanResponse> responses = itemStockService.getItemStocksByBarcode(barcode);
         return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diambil", responses, null));
     }
+
+    @GetMapping("/barcode/{barcode}/recommendation")
+    public ResponseEntity<APIResponse<List<RecommendedBarcodeScanResponse>>> getRecommendedItemByBarcode(@PathVariable String barcode) {
+        if (barcode == null || barcode.isEmpty()) {
+            throw new BadRequestException("Barcode tidak boleh kosong");
+        }
+
+        List<RecommendedBarcodeScanResponse> responses = itemStockService.getRecommendedItemStocksByBarcode(barcode);
+        return ResponseEntity.ok(new APIResponse<>(true, "Barang berhasil diambil", responses, null));
+    }
+
 
     @GetMapping("/{itemStockId}")
     public ResponseEntity<APIResponse<ItemStock>> getItemStockById(@PathVariable UUID itemStockId) {

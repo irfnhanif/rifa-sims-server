@@ -28,4 +28,6 @@ public interface ItemStockRepository extends JpaRepository<ItemStock, UUID> {
     Page<ItemStock> findByItem_NameContaining(String itemName, Pageable pageable);
 
     Optional<ItemStock> findByItem_Name(String itemName);
+
+    List<ItemStock> findByItem_Barcode(String barcode);
 }

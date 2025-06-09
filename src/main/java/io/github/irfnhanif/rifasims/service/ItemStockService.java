@@ -2,12 +2,14 @@ package io.github.irfnhanif.rifasims.service;
 
 import io.github.irfnhanif.rifasims.dto.BarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.EditStockChangeRequest;
+import io.github.irfnhanif.rifasims.dto.RecommendedBarcodeScanResponse;
 import io.github.irfnhanif.rifasims.dto.ScanStockChangeRequest;
 import io.github.irfnhanif.rifasims.entity.*;
 import io.github.irfnhanif.rifasims.exception.BadRequestException;
 import io.github.irfnhanif.rifasims.exception.ResourceNotFoundException;
 import io.github.irfnhanif.rifasims.repository.ItemStockRepository;
 import io.github.irfnhanif.rifasims.repository.UserRepository;
+import io.github.irfnhanif.rifasims.util.ScanItemRecommender;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,8 @@ public class ItemStockService {
     private final ItemStockRepository itemStockRepository;
     private final StockAuditLogService stockAuditLogService;
     private final UserService userService;
+    private final ScanItemRecommender scanItemRecommender = new ScanItemRecommender();
+
     public ItemStockService(ItemStockRepository itemStockRepository, StockAuditLogService stockAuditLogService, UserService userService) {
         this.itemStockRepository = itemStockRepository;
         this.stockAuditLogService = stockAuditLogService;
@@ -50,6 +54,13 @@ public class ItemStockService {
     public List<BarcodeScanResponse> getItemStocksByBarcode(String barcode) {
         List<BarcodeScanResponse> responses = itemStockRepository.findItemStocksByBarcode(barcode);
         return responses;
+    }
+
+    public List<RecommendedBarcodeScanResponse> getRecommendedItemStocksByBarcode(String barcode) {
+        List<ItemStock> itemStocks = itemStockRepository.findByItem_Barcode(barcode);
+        List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByItemBarcode(barcode);
+
+        return scanItemRecommender.recommendItem(itemStocks, stockAuditLogs);
     }
 
     public ItemStock getItemStockById(UUID itemStockId) {
