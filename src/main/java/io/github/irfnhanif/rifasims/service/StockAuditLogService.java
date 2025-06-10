@@ -76,7 +76,7 @@ public class StockAuditLogService {
     }
 
     public List<StockAuditLog> getStockAuditLogsByItem(Item item, LocalDateTime fromDate, LocalDateTime toDate) {
-        return stockAuditLogRepository.findAllByItemIdAndItemBarcodeAndTimestampBetween(item.getId(), item.getBarcode(), fromDate, toDate);
+        return stockAuditLogRepository.findAllByItemIdAndTimestampBetween(item.getId(), fromDate, toDate);
     }
 
     public List<StockAuditLog> getStockAuditLogsByItemName(String name) {
