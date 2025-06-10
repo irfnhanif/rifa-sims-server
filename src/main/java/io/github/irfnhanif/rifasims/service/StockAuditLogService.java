@@ -97,7 +97,8 @@ public class StockAuditLogService {
     }
 
     public List<StockAuditLog> getStockAuditLogsByItemBarcode(String barcode) {
-        return stockAuditLogRepository.findAllByItemBarcode(barcode);
+        List<StockChangeType> changeTypes = Arrays.asList(StockChangeType.IN, StockChangeType.OUT);
+        return stockAuditLogRepository.findAllByItemBarcodeAndTypeIn(barcode, changeTypes);
     }
 
     public List<StockAuditLog> getStockAuditLogsByUsername(String username) {
