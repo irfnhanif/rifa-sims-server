@@ -16,11 +16,17 @@ public class StockAuditLog {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false, name = "item_id")
+    private UUID itemId;
+
     @Column(nullable = false)
     private String itemName;
 
     @Column(nullable = false)
     private String itemBarcode;
+
+    @Column(nullable = false, name = "user_id")
+    private UUID userId;
 
     @Column(nullable = false)
     private String username;
@@ -53,6 +59,14 @@ public class StockAuditLog {
         this.id = id;
     }
 
+    public UUID getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(UUID itemId) {
+        this.itemId = itemId;
+    }
+
     public String getItemName() {
         return itemName;
     }
@@ -67,6 +81,14 @@ public class StockAuditLog {
 
     public void setItemBarcode(String itemBarcode) {
         this.itemBarcode = itemBarcode;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {

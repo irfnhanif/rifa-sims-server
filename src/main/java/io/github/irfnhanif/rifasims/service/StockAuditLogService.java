@@ -76,7 +76,7 @@ public class StockAuditLogService {
     }
 
     public List<StockAuditLog> getStockAuditLogsByItem(Item item, LocalDateTime fromDate, LocalDateTime toDate) {
-        return stockAuditLogRepository.findAllByItemNameAndItemBarcodeAndTimestampBetween(item.getName(), item.getBarcode(), fromDate, toDate);
+        return stockAuditLogRepository.findAllByItemIdAndItemBarcodeAndTimestampBetween(item.getId(), item.getBarcode(), fromDate, toDate);
     }
 
     public List<StockAuditLog> getStockAuditLogsByItemName(String name) {
@@ -97,8 +97,10 @@ public class StockAuditLogService {
 
     public StockAuditLog recordStockChange(Item item, User user, StockChangeType type, Integer oldStock, Integer newStock, String reason, LocalDateTime timestamp) {
         StockAuditLog stockAuditLog = new StockAuditLog();
+        stockAuditLog.setItemId(item.getId());
         stockAuditLog.setItemName(item.getName());
         stockAuditLog.setItemBarcode(item.getBarcode());
+        stockAuditLog.setUserId(user.getId());
         stockAuditLog.setUsername(user.getUsername());
         stockAuditLog.setType(type);
         stockAuditLog.setOldStock(oldStock);
