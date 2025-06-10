@@ -30,14 +30,9 @@ public class UserService {
     public List<User> getAllUsers(String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         if (name != null) {
-            return userRepository.findByUsernameContainingIgnoreCase(name, pageable).getContent();
+            return userRepository.findByUsernameContainingIgnoreCaseAndDeletedFalse(name, pageable).getContent();
         }
-        return userRepository.findAll(pageable).getContent();
-    }
-
-    public List<User> getPendingUsers() {
-        List<User> pendingUsers = userRepository.findByStatus(UserStatus.PENDING);
-        return pendingUsers;
+        return userRepository.findByDeletedFalse(pageable).getContent();
     }
 
     public List<User> getPendingUsersAndAddedToNotificationFalse() {
@@ -84,12 +79,22 @@ public class UserService {
 
     public User acceptUser(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (getCurrentUser().getRole() != UserRole.OWNER) {
+            throw new AccessDeniedException("You are not allowed to accept other employee account");
+        }
+
         user.setStatus(UserStatus.ACTIVE);
         return userRepository.save(user);
     }
 
     public User rejectUser(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (getCurrentUser().getRole() != UserRole.OWNER) {
+            throw new AccessDeniedException("You are not allowed to reject other employee account");
+        }
+
         deleteUser(userId);
         return user;
     }
@@ -108,6 +113,7 @@ public class UserService {
             throw new AccessDeniedException("You are not allowed to delete other employee account");
         }
 
-        userRepository.deleteById(userId);
+        user.setDeleted(true);
+        userRepository.save(user);
     }
 }

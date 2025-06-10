@@ -32,13 +32,14 @@ public class ItemService {
     public List<Item> getAllItems(String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         if (name != null) {
-            return itemRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
+            return itemRepository.findByNameContainingIgnoreCaseAndDeletedFalse(name, pageable).getContent();
         }
-        return itemRepository.findAll(pageable).getContent();
+        return itemRepository.findByDeletedFalse(pageable).getContent();
     }
 
     public Item getItemById(UUID id) {
-        return itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        return itemRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
     }
 
     public ItemDetailResponse getItemById(UUID itemId, LocalDateTime fromDate, LocalDateTime toDate) {
@@ -108,8 +109,11 @@ public class ItemService {
 
     public void deleteItem(UUID id) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+
         Integer oldStock = itemStockService.deleteItemStockChange(item);
-        itemRepository.delete(item);
+
+        item.setDeleted(true);
+        itemRepository.save(item);
 
         stockAuditLogService.recordStockChange(
                 item,

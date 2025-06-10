@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
+public class UserController extends ItemStockController {
     // jangan lupa translate response.message ke bahasa indo
     private final UserService userService;
     private final CustomUserDetailsService userDetailsService;

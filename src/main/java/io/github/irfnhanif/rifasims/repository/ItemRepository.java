@@ -10,9 +10,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ItemRepository  extends JpaRepository<Item, UUID> {
-    List<Item> findByBarcode(String barcode);
-    Optional<Item> findById(UUID id);
-    Page<Item> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Optional<Item> findByIdAndDeletedFalse(UUID id);
+
+    Page<Item> findByNameContainingIgnoreCaseAndDeletedFalse(String name, Pageable pageable);
 
     Optional<Item> findByName(String name);
+
+    Page<Item> findByDeletedFalse(Pageable pageable);
 }

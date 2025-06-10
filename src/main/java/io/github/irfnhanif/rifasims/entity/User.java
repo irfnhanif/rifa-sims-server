@@ -42,6 +42,8 @@ public class User {
     @Column(name = "added_to_notification", nullable = false)
     private boolean addedToNotification = false;
 
+    private boolean deleted = false;
+
     public UUID getId() {
         return id;
     }
@@ -96,6 +98,14 @@ public class User {
 
     public void setAddedToNotification(boolean addedToNotification) {
         this.addedToNotification = addedToNotification;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }
 
