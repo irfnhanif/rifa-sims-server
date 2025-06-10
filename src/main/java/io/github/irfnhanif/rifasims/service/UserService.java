@@ -51,21 +51,6 @@ public class UserService {
             throw new AccessDeniedException("You are not allowed to update other user account");
         }
 
-        if (!existingUser.getUsername().equals(editUserRequest.getUsername())) {
-            if (userRepository.findByUsername(editUserRequest.getUsername()).isPresent()) {
-                throw new BadRequestException("Username already exists");
-            }
-
-            List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByUsername(existingUser.getUsername());
-
-            if (!stockAuditLogs.isEmpty()) {
-                for (StockAuditLog stockAuditLog : stockAuditLogs) {
-                    stockAuditLog.setUsername(editUserRequest.getUsername());
-                }
-                stockAuditLogService.saveStockAuditLogs(stockAuditLogs);
-            }
-        }
-
         existingUser.setUsername(editUserRequest.getUsername());
         existingUser.setBranch(editUserRequest.getBranch());
         return userRepository.save(existingUser);

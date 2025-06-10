@@ -33,14 +33,27 @@ public class StockAuditLogService {
     public Map<String, Object> getStockAuditLogs(String itemName, String userName, List<StockChangeType> changeTypes, LocalDateTime fromDate, LocalDateTime toDate, Integer page, Integer size, String sortBy, String sortDirection, Boolean deleted) {
         Specification<StockAuditLog> spec = Specification.where(null);
         if (itemName != null && !itemName.isEmpty()) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("itemName")),
-                            "%" + itemName.toLowerCase() + "%"));
+            try {
+                Item item = itemService.getItemByName(itemName);
+                spec = spec.and((root, query, cb) ->
+                        cb.equal(root.get("itemId"), item.getId()));
+            } catch (ResourceNotFoundException e) {
+                spec = spec.and((root, query, cb) ->
+                        cb.like(cb.lower(root.get("itemName")),
+                                "%" + itemName.toLowerCase() + "%"));
+            }
         }
+
         if (userName != null && !userName.isEmpty()) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("username")),
-                            "%" + userName.toLowerCase() + "%"));
+            try {
+                User user = userService.getUserByUsername(userName);
+                spec = spec.and((root, query, cb) ->
+                        cb.equal(root.get("userId"), user.getId()));
+            } catch (ResourceNotFoundException e) {
+                spec = spec.and((root, query, cb) ->
+                        cb.like(cb.lower(root.get("username")),
+                                "%" + userName.toLowerCase() + "%"));
+            }
         }
         if (changeTypes != null && !changeTypes.isEmpty()) {
             spec = spec.and((root, query, cb) -> root.get("type").in(changeTypes));
