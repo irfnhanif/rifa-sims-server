@@ -54,7 +54,7 @@ public class ScanItemRecommender {
         if (matchingItemStocks.size() == 1) {
             ItemStock singleItemStock = matchingItemStocks.getFirst();
             return Collections.singletonList(new RecommendedBarcodeScanResponse(
-                    singleItemStock.getId().toString(),
+                    singleItemStock.getId(),
                     singleItemStock.getItem().getName(),
                     singleItemStock.getCurrentStock(),
                     "1.00"
@@ -111,7 +111,7 @@ public class ScanItemRecommender {
         // Step 4: Map the sorted list to the final DTO response
         return scoredItems.stream()
                 .map(rankedItem -> new RecommendedBarcodeScanResponse(
-                        rankedItem.itemStock.getId().toString(),
+                        rankedItem.itemStock.getId(),
                         rankedItem.itemStock.getItem().getName(),
                         rankedItem.itemStock.getCurrentStock(),
                         String.format("%.2f", rankedItem.score) // Format score to 2 decimal places

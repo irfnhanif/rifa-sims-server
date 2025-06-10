@@ -1,19 +1,21 @@
 package io.github.irfnhanif.rifasims.dto;
 
+import java.util.UUID;
+
 public class RecommendedBarcodeScanResponse {
-    String itemStockId;
+    UUID itemStockId;
     String itemName;
     Integer currentStock;
     String recommendationScore;
 
-    public RecommendedBarcodeScanResponse(String itemStockId, String itemName, Integer currentStock, String recommendationScore) {
+    public RecommendedBarcodeScanResponse(UUID itemStockId, String itemName, Integer currentStock, String recommendationScore) {
         this.itemStockId = itemStockId;
         this.itemName = itemName;
         this.currentStock = currentStock;
         this.recommendationScore = recommendationScore;
     }
 
-    public String getItemStockId() {
+    public UUID getItemStockId() {
         return itemStockId;
     }
 
