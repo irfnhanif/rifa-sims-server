@@ -14,11 +14,14 @@ import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String username);
-    List<User> findByStatus(UserStatus status);
+
+    Optional<User> findByUsernameIgnoreCase(String username);
 
     List<User> findByStatusAndAddedToNotificationFalse(UserStatus userStatus);
 
-    Page<User> findByUsernameContainingIgnoreCase(String name, Pageable pageable);
+    Page<User> findByUsernameContainingIgnoreCaseAndDeletedFalse(String name, Pageable pageable);
+
+    Page<User> findByDeletedFalse(Pageable pageable);
 
     boolean existsByUsername(String username);
 }

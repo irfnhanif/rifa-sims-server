@@ -34,6 +34,8 @@ public class Item {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    private boolean deleted = false;
+
     public UUID getId() {
         return id;
     }
@@ -64,5 +66,13 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

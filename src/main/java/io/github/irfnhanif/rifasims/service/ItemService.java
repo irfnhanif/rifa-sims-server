@@ -32,13 +32,14 @@ public class ItemService {
     public List<Item> getAllItems(String name, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         if (name != null) {
-            return itemRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
+            return itemRepository.findByNameContainingIgnoreCaseAndDeletedFalse(name, pageable).getContent();
         }
-        return itemRepository.findAll(pageable).getContent();
+        return itemRepository.findByDeletedFalse(pageable).getContent();
     }
 
     public Item getItemById(UUID id) {
-        return itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        return itemRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
     }
 
     public ItemDetailResponse getItemById(UUID itemId, LocalDateTime fromDate, LocalDateTime toDate) {
@@ -54,7 +55,7 @@ public class ItemService {
     }
 
     public Item getItemByName(String name) {
-        return itemRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        return itemRepository.findByNameIgnoreCase(name).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
     }
 
     public Item createItem(CreateItemRequest createItemRequest) {
@@ -80,36 +81,17 @@ public class ItemService {
     public Item updateItem(UUID itemId, Item item) {
         Item existingItem = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 
-        if (!existingItem.getName().equals(item.getName())) {
-            List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByItemName(existingItem.getName());
-
-            if (!stockAuditLogs.isEmpty()) {
-                for (StockAuditLog stockAuditLog : stockAuditLogs) {
-                    stockAuditLog.setItemName(item.getName());
-                }
-                stockAuditLogService.saveStockAuditLogs(stockAuditLogs);
-            }
-
-        }
-
-        if (!existingItem.getBarcode().equals(item.getBarcode())) {
-            List<StockAuditLog> stockAuditLogs = stockAuditLogService.getStockAuditLogsByItemBarcode(existingItem.getBarcode());
-
-            if (!stockAuditLogs.isEmpty()) {
-                for (StockAuditLog stockAuditLog : stockAuditLogs) {
-                    stockAuditLog.setItemBarcode(item.getBarcode());
-                }
-                stockAuditLogService.saveStockAuditLogs(stockAuditLogs);
-            }
-        }
         item.setId(itemId);
         return itemRepository.save(item);
     }
 
     public void deleteItem(UUID id) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+
         Integer oldStock = itemStockService.deleteItemStockChange(item);
-        itemRepository.delete(item);
+
+        item.setDeleted(true);
+        itemRepository.save(item);
 
         stockAuditLogService.recordStockChange(
                 item,

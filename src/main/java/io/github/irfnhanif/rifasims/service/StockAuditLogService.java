@@ -33,14 +33,27 @@ public class StockAuditLogService {
     public Map<String, Object> getStockAuditLogs(String itemName, String userName, List<StockChangeType> changeTypes, LocalDateTime fromDate, LocalDateTime toDate, Integer page, Integer size, String sortBy, String sortDirection, Boolean deleted) {
         Specification<StockAuditLog> spec = Specification.where(null);
         if (itemName != null && !itemName.isEmpty()) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("itemName")),
-                            "%" + itemName.toLowerCase() + "%"));
+            try {
+                Item item = itemService.getItemByName(itemName);
+                spec = spec.and((root, query, cb) ->
+                        cb.equal(root.get("itemId"), item.getId()));
+            } catch (ResourceNotFoundException e) {
+                spec = spec.and((root, query, cb) ->
+                        cb.like(cb.lower(root.get("itemName")),
+                                "%" + itemName.toLowerCase() + "%"));
+            }
         }
+
         if (userName != null && !userName.isEmpty()) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("username")),
-                            "%" + userName.toLowerCase() + "%"));
+            try {
+                User user = userService.getUserByUsername(userName);
+                spec = spec.and((root, query, cb) ->
+                        cb.equal(root.get("userId"), user.getId()));
+            } catch (ResourceNotFoundException e) {
+                spec = spec.and((root, query, cb) ->
+                        cb.like(cb.lower(root.get("username")),
+                                "%" + userName.toLowerCase() + "%"));
+            }
         }
         if (changeTypes != null && !changeTypes.isEmpty()) {
             spec = spec.and((root, query, cb) -> root.get("type").in(changeTypes));
@@ -76,7 +89,7 @@ public class StockAuditLogService {
     }
 
     public List<StockAuditLog> getStockAuditLogsByItem(Item item, LocalDateTime fromDate, LocalDateTime toDate) {
-        return stockAuditLogRepository.findAllByItemNameAndItemBarcodeAndTimestampBetween(item.getName(), item.getBarcode(), fromDate, toDate);
+        return stockAuditLogRepository.findAllByItemIdAndTimestampBetween(item.getId(), fromDate, toDate);
     }
 
     public List<StockAuditLog> getStockAuditLogsByItemName(String name) {
@@ -84,7 +97,8 @@ public class StockAuditLogService {
     }
 
     public List<StockAuditLog> getStockAuditLogsByItemBarcode(String barcode) {
-        return stockAuditLogRepository.findAllByItemBarcode(barcode);
+        List<StockChangeType> changeTypes = Arrays.asList(StockChangeType.IN, StockChangeType.OUT);
+        return stockAuditLogRepository.findAllByItemBarcodeAndTypeIn(barcode, changeTypes);
     }
 
     public List<StockAuditLog> getStockAuditLogsByUsername(String username) {
@@ -97,8 +111,10 @@ public class StockAuditLogService {
 
     public StockAuditLog recordStockChange(Item item, User user, StockChangeType type, Integer oldStock, Integer newStock, String reason, LocalDateTime timestamp) {
         StockAuditLog stockAuditLog = new StockAuditLog();
+        stockAuditLog.setItemId(item.getId());
         stockAuditLog.setItemName(item.getName());
         stockAuditLog.setItemBarcode(item.getBarcode());
+        stockAuditLog.setUserId(user.getId());
         stockAuditLog.setUsername(user.getUsername());
         stockAuditLog.setType(type);
         stockAuditLog.setOldStock(oldStock);
