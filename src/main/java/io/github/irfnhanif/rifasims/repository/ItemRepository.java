@@ -14,7 +14,7 @@ public interface ItemRepository  extends JpaRepository<Item, UUID> {
 
     Page<Item> findByNameContainingIgnoreCaseAndDeletedFalse(String name, Pageable pageable);
 
-    Optional<Item> findByName(String name);
+    Optional<Item> findByNameIgnoreCase(String name);
 
     Page<Item> findByDeletedFalse(Pageable pageable);
 }

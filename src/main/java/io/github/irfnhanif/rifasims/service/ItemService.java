@@ -55,7 +55,7 @@ public class ItemService {
     }
 
     public Item getItemByName(String name) {
-        return itemRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        return itemRepository.findByNameIgnoreCase(name).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
     }
 
     public Item createItem(CreateItemRequest createItemRequest) {

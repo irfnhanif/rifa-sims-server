@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userRepository.findByUsernameIgnoreCase(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     public User updateUser(UUID userId, EditUserRequest editUserRequest) {

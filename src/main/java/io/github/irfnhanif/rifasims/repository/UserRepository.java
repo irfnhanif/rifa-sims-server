@@ -14,7 +14,8 @@ import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String username);
-    List<User> findByStatus(UserStatus status);
+
+    Optional<User> findByUsernameIgnoreCase(String username);
 
     List<User> findByStatusAndAddedToNotificationFalse(UserStatus userStatus);
 
