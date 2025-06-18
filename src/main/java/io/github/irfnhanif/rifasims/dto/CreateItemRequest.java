@@ -2,6 +2,7 @@ package io.github.irfnhanif.rifasims.dto;
 
 import io.github.irfnhanif.rifasims.entity.Item;
 import io.github.irfnhanif.rifasims.entity.ItemStock;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 
 public class CreateItemRequest {
@@ -23,6 +24,22 @@ public class CreateItemRequest {
     @NotNull(message = "Batas minimum stok tidak boleh kosong")
     @Min(value = 0, message = "Batas minimum stok tidak boleh negatif")
     private Integer threshold;
+
+    @Column(nullable = false)
+    @NotNull(message = "Harga beli tidak boleh kosong")
+    @Min(value = 1, message = "Harga beli minimal 1 Rupiah")
+    private Long wholesalePrice;
+
+    @Column(nullable = false)
+    @NotNull(message = "Persentase keuntungan tidak boleh kosong")
+    @Min(value = 0, message = "Persentase keuntungan tidak boleh negatif")
+    @Max(value = 100, message = "Persentase keuntungan maksimal 100%")
+    private Double profitPercentage;
+
+    @Column(nullable = false)
+    @NotNull(message = "Harga jual tidak boleh kosong")
+    @Min(value = 1, message = "Harga jual minimal 1 Rupiah")
+    private Long retailPrice;
 
     public String getName() {
         return name;
@@ -62,5 +79,29 @@ public class CreateItemRequest {
 
     public void setThreshold(Integer threshold) {
         this.threshold = threshold;
+    }
+
+    public Long getWholesalePrice() {
+        return wholesalePrice;
+    }
+
+    public void setWholesalePrice(Long wholesalePrice) {
+        this.wholesalePrice = wholesalePrice;
+    }
+
+    public Double getProfitPercentage() {
+        return profitPercentage;
+    }
+
+    public void setProfitPercentage(Double profitPercentage) {
+        this.profitPercentage = profitPercentage;
+    }
+
+    public Long getRetailPrice() {
+        return retailPrice;
+    }
+
+    public void setRetailPrice(Long retailPrice) {
+        this.retailPrice = retailPrice;
     }
 }
