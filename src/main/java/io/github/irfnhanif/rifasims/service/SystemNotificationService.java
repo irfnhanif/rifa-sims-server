@@ -27,7 +27,7 @@ public class SystemNotificationService {
     }
 
     public List<SystemNotification> getNotificationsForOwner() {
-        return systemNotificationRepository.findByReadFalseOrderByCreatedAtDesc();
+        return systemNotificationRepository.findAllByOrderByReadAscCreatedAtDesc();
     }
 
     public void markAsRead(UUID notificationId) {

@@ -17,7 +17,7 @@ public interface SystemNotificationRepository extends JpaRepository<SystemNotifi
 
     Optional<SystemNotification> findById(UUID id);
 
-    List<SystemNotification> findByReadFalseOrderByCreatedAtDesc();
+    List<SystemNotification> findAllByOrderByReadAscCreatedAtDesc();
 
     List<SystemNotification> findByReadFalse();
 }
