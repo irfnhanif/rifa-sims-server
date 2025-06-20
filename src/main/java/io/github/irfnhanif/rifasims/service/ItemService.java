@@ -59,7 +59,14 @@ public class ItemService {
     }
 
     public Item createItem(CreateItemRequest createItemRequest) {
-        Item item = createNewItem(createItemRequest.getName(), createItemRequest.getBarcode(), createItemRequest.getDescription());
+        Item item = createNewItem(
+                createItemRequest.getName(),
+                createItemRequest.getBarcode(),
+                createItemRequest.getDescription(),
+                createItemRequest.getWholesalePrice(),
+                createItemRequest.getProfitPercentage(),
+                createItemRequest.getRetailPrice()
+        );
         Item savedItem = itemRepository.save(item);
 
         ItemStock itemStock = createNewItemStock(savedItem, createItemRequest.getCurrentStock(), createItemRequest.getThreshold());
@@ -79,7 +86,9 @@ public class ItemService {
     }
 
     public Item updateItem(UUID itemId, Item item) {
-        Item existingItem = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+       if (!itemRepository.findById(itemId).isPresent()) {
+           throw new ResourceNotFoundException("Item not found");
+       }
 
         item.setId(itemId);
         return itemRepository.save(item);
@@ -104,11 +113,14 @@ public class ItemService {
         );
     }
 
-    private Item createNewItem(String itemName, String itemBarcode, String itemDescription) {
+    private Item createNewItem(String itemName, String itemBarcode, String itemDescription, Long itemWholesalePrice, Double itemProfitPercentage, Long itemRetailPrice) {
         Item item = new Item();
         item.setName(itemName);
         item.setBarcode(itemBarcode);
         item.setDescription(itemDescription);
+        item.setWholesalePrice(itemWholesalePrice);
+        item.setProfitPercentage(itemProfitPercentage);
+        item.setRetailPrice(itemRetailPrice);
         return item;
     }
 

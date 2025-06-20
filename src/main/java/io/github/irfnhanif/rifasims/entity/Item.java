@@ -2,9 +2,7 @@ package io.github.irfnhanif.rifasims.entity;
 
 import io.github.irfnhanif.rifasims.validation.MustBeString;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -33,6 +31,22 @@ public class Item {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false)
+    @NotNull(message = "Harga kulakan tidak boleh kosong")
+    @Min(value = 1, message = "Harga beli minimal 1 Rupiah")
+    private Long wholesalePrice;
+
+    @Column(nullable = false)
+    @NotNull(message = "Persentase keuntungan tidak boleh kosong")
+    @Min(value = 0, message = "Persentase keuntungan tidak boleh negatif")
+    @Max(value = 100, message = "Persentase keuntungan maksimal 100%")
+    private Double profitPercentage;
+
+    @Column(nullable = false)
+    @NotNull(message = "Harga jual tidak boleh kosong")
+    @Min(value = 1, message = "Harga jual minimal 1 Rupiah")
+    private Long retailPrice;
 
     private boolean deleted = false;
 
@@ -66,6 +80,30 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getWholesalePrice() {
+        return wholesalePrice;
+    }
+
+    public void setWholesalePrice(Long wholesalePrice) {
+        this.wholesalePrice = wholesalePrice;
+    }
+
+    public Double getProfitPercentage() {
+        return profitPercentage;
+    }
+
+    public void setProfitPercentage(Double profitPercentage) {
+        this.profitPercentage = profitPercentage;
+    }
+
+    public Long getRetailPrice() {
+        return retailPrice;
+    }
+
+    public void setRetailPrice(Long retailPrice) {
+        this.retailPrice = retailPrice;
     }
 
     public boolean isDeleted() {
