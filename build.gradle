@@ -30,7 +30,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    implementation 'org.telegram:telegrambots-spring-boot-starter:latest.release'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:latest.release'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'

@@ -11,6 +11,21 @@ spring:
     properties:
       hibernate:
               dialect: org.hibernate.dialect.PostgreSQLDialect
+  web:
+    cors:
+      origin: "*"
+      method:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "PATCH"
+        - "DELETE"
+        - "OPTIONS"
+      allowed-headers:
+        - "Authorization"
+        - "Content-Type"
+      exposed-headers: "Authorization"
+      max-age: 3600
   security:
     user:
       password:
@@ -23,7 +38,6 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
-
 
 telegram:
   bot:
