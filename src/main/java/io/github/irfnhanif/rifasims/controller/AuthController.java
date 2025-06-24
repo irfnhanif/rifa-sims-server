@@ -6,7 +6,6 @@ import io.github.irfnhanif.rifasims.entity.User;
 import io.github.irfnhanif.rifasims.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;

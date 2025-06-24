@@ -3,7 +3,6 @@ package io.github.irfnhanif.rifasims.controller;
 import io.github.irfnhanif.rifasims.dto.APIResponse;
 import io.github.irfnhanif.rifasims.entity.SystemNotification;
 import io.github.irfnhanif.rifasims.service.SystemNotificationService;
-import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
