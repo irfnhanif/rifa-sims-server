@@ -3,15 +3,17 @@ package io.github.irfnhanif.rifasims.dto;
 import java.util.UUID;
 
 public class RecommendedBarcodeScanResponse {
-    UUID itemStockId;
-    String itemName;
-    Integer currentStock;
-    String recommendationScore;
+    private UUID itemStockId;
+    private String itemName;
+    private Integer currentStock;
+    private Long wholesalePrice;
+    private String recommendationScore;
 
-    public RecommendedBarcodeScanResponse(UUID itemStockId, String itemName, Integer currentStock, String recommendationScore) {
+    public RecommendedBarcodeScanResponse(UUID itemStockId, String itemName, Integer currentStock, Long wholesalePrice, String recommendationScore) {
         this.itemStockId = itemStockId;
         this.itemName = itemName;
         this.currentStock = currentStock;
+        this.wholesalePrice = wholesalePrice;
         this.recommendationScore = recommendationScore;
     }
 
@@ -29,5 +31,9 @@ public class RecommendedBarcodeScanResponse {
 
     public String getRecommendationScore() {
         return recommendationScore;
+    }
+
+    public Long getWholesalePrice() {
+        return wholesalePrice;
     }
 }

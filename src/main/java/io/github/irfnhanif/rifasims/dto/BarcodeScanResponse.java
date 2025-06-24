@@ -6,11 +6,13 @@ public class BarcodeScanResponse {
     private UUID itemStockId;
     private String itemName;
     private Integer currentStock;
+    private Long wholesalePrice;
 
-    public BarcodeScanResponse(UUID itemStockId, String itemName, Integer currentStock) {
+    public BarcodeScanResponse(UUID itemStockId, String itemName, Integer currentStock,  Long wholesalePrice) {
         this.itemStockId = itemStockId;
         this.itemName = itemName;
         this.currentStock = currentStock;
+        this.wholesalePrice = wholesalePrice;
     }
 
     public UUID getItemStockId() {
@@ -35,5 +37,13 @@ public class BarcodeScanResponse {
 
     public void setCurrentStock(Integer currentStock) {
         this.currentStock = currentStock;
+    }
+
+    public Long getWholesalePrice() {
+        return wholesalePrice;
+    }
+
+    public void setWholesalePrice(Long wholesalePrice) {
+        this.wholesalePrice = wholesalePrice;
     }
 }

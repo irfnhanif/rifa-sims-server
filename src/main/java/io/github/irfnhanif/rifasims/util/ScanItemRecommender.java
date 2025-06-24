@@ -57,6 +57,7 @@ public class ScanItemRecommender {
                     singleItemStock.getId(),
                     singleItemStock.getItem().getName(),
                     singleItemStock.getCurrentStock(),
+                    singleItemStock.getItem().getWholesalePrice(),
                     "1.00"
             ));
         }
@@ -114,7 +115,8 @@ public class ScanItemRecommender {
                         rankedItem.itemStock.getId(),
                         rankedItem.itemStock.getItem().getName(),
                         rankedItem.itemStock.getCurrentStock(),
-                        String.format("%.2f", rankedItem.score) // Format score to 2 decimal places
+                        rankedItem.itemStock.getItem().getWholesalePrice(),
+                        String.format("%.2f", rankedItem.score)
                 ))
                 .collect(Collectors.toList());
     }
