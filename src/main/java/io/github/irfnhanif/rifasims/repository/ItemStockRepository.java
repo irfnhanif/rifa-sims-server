@@ -16,7 +16,8 @@ public interface ItemStockRepository extends JpaRepository<ItemStock, UUID> {
     Optional<ItemStock> findByItem(Item item);
     @Query("SELECT new io.github.irfnhanif.rifasims.dto.BarcodeScanResponse(is.id, i.name, is.currentStock, i.wholesalePrice) " +
             "FROM Item i JOIN ItemStock is ON  i.id = is.item.id " +
-            "WHERE i.barcode = :barcode")
+            "WHERE i.barcode = :barcode " +
+            "ORDER BY i.name")
     List<BarcodeScanResponse> findItemStocksByBarcode(String barcode);
 
     @Query("SELECT is FROM ItemStock is WHERE (:name IS NULL OR is.item.name = :name) AND is.currentStock < is.threshold")
