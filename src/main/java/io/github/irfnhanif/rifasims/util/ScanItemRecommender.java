@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ScanItemRecommender {
-    private static final double WEIGHT_FREQUENCY = 0.6;
-    private static final double WEIGHT_RECENCY = 0.4;
+    private static final double WEIGHT_FREQUENCY = 0.4;
+    private static final double WEIGHT_RECENCY = 0.6;
     private static final long MAX_TIME_ELAPSED_SECONDS = 30L * 24L * 60L * 60L;
 
     // Private helper class to hold raw data before scoring.
@@ -98,7 +98,9 @@ public class ScanItemRecommender {
             long timeElapsedSeconds = Duration.between(rawData.rawTime, currentTime).getSeconds();
             double normalizedRecencyScore = 0;
             if (timeElapsedSeconds < MAX_TIME_ELAPSED_SECONDS) {
-                normalizedRecencyScore = 1.0 - ((double) timeElapsedSeconds / MAX_TIME_ELAPSED_SECONDS);
+                normalizedRecencyScore = Math.pow(1.0 - ((double) timeElapsedSeconds / MAX_TIME_ELAPSED_SECONDS), 2);
+            } else {
+                normalizedFrequencyScore *= 0.5;
             }
 
             double recommendationScore = (WEIGHT_FREQUENCY * normalizedFrequencyScore) + (WEIGHT_RECENCY * normalizedRecencyScore);

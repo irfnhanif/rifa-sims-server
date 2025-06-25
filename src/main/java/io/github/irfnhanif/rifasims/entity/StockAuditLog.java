@@ -51,6 +51,28 @@ public class StockAuditLog {
 
     private LocalDateTime deletedTimestamp;
 
+    public StockAuditLog() {
+        this.username = "";
+        this.itemBarcode = "";
+        this.itemName = "";
+        this.oldStock = 0;
+        this.newStock = 0;
+        this.deleted = false;
+    }
+
+    public StockAuditLog(UUID itemId, String itemBarcode, String itemName, LocalDateTime timestamp) {
+        this.itemBarcode = itemBarcode;
+        this.itemName = itemName;
+        this.timestamp = timestamp;
+        this.itemId = itemId; // Default value
+        this.userId = UUID.randomUUID(); // Default value
+        this.username = "test-user";
+        this.type = new java.util.Random().nextBoolean() ? StockChangeType.IN : StockChangeType.OUT;
+        this.oldStock = 0;
+        this.newStock = 0;
+        this.deleted = false;
+    }
+
     public UUID getId() {
         return id;
     }

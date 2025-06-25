@@ -25,6 +25,17 @@ public class ItemStock {
     @Min(value = 0, message = "Batas minimum stok tidak boleh negatif")
     private Integer threshold;
 
+    public ItemStock() {
+        this.currentStock = 0;
+        this.threshold = 0;
+    }
+
+    public ItemStock(Item item, Integer currentStock) {
+        this.item = item;
+        this.currentStock = currentStock;
+        this.threshold = 0; // Default value
+    }
+
     public UUID getId() {
         return id;
     }

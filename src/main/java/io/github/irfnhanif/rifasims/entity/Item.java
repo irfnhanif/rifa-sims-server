@@ -58,6 +58,23 @@ public class Item {
         this.id = id;
     }
 
+    public Item() {
+        this.name = "";
+        this.barcode = "";
+        this.wholesalePrice = 0L;
+        this.retailPrice = 0L;
+        this.profitPercentage = 0.0;
+    }
+
+    public Item(UUID id, String name, String barcode) {
+        this.id = id;
+        this.name = name;
+        this.barcode = barcode;
+        this.wholesalePrice = 0L;
+        this.retailPrice = 0L;
+        this.profitPercentage = 0.0;
+    }
+
     public String getName() {
         return name;
     }
