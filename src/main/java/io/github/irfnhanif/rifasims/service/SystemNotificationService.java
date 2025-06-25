@@ -44,7 +44,7 @@ public class SystemNotificationService {
     }
 
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 600000)
     public void checkForNotificationEvents() {
         checkLowStockItems();
         checkPendingUsers();
