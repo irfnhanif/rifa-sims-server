@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -130,6 +131,7 @@ public class StockAuditLogService {
         stockAuditLogRepository.saveAll(stockAuditLogs);
     }
 
+    @Transactional
     public void deleteStockAuditLog(UUID stockAuditLogId) {
         StockAuditLog stockAuditLog = stockAuditLogRepository.findById(stockAuditLogId)
                 .orElseThrow(() -> new ResourceNotFoundException("Stock Audit Log Not Found"));

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,7 +72,7 @@ public class ItemStockService {
         return itemStockRepository.save(itemStock);
     }
 
-
+    @Transactional
     public ItemStock updateItemStockChange(UUID itemStockId, EditStockChangeRequest editStockChangeRequest) {
         ItemStock existingItemStock = itemStockRepository.findById(itemStockId)
                 .orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
@@ -95,6 +96,7 @@ public class ItemStockService {
         return existingItemStock;
     }
 
+    @Transactional
     public ItemStock updateScanItemStockChange(UUID itemStockId, ScanStockChangeRequest scanStockChangeRequest) {
         ItemStock itemStock = itemStockRepository.findById(itemStockId).orElseThrow(() -> new ResourceNotFoundException("Item stock not found"));
 

@@ -8,6 +8,7 @@ import io.github.irfnhanif.rifasims.repository.ItemRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,6 +59,7 @@ public class ItemService {
         return itemRepository.findByNameIgnoreCase(name).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
     }
 
+    @Transactional
     public Item createItem(CreateItemRequest createItemRequest) {
         Item item = createNewItem(
                 createItemRequest.getName(),
@@ -94,6 +96,7 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
+    @Transactional
     public void deleteItem(UUID id) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 

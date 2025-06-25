@@ -25,29 +25,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIResponse<Void>> handleGenericException(Exception e) {
-        log.error("Exception caught:", e);
-
         String message = "Internal server error";
         String detailedMessage = e.getMessage();
-
-        // Extract root cause for transaction exceptions
-        if (e instanceof TransactionSystemException) {
-            Throwable cause = e.getCause();
-            if (cause instanceof RollbackException && cause.getCause() != null) {
-                // This is typically where validation errors are
-                Throwable rootCause = cause.getCause();
-                log.error("Root cause:", rootCause);
-
-                if (rootCause instanceof ConstraintViolationException) {
-                    detailedMessage = "Constraint violation: " +
-                            ((ConstraintViolationException) rootCause).getConstraintName() + " - " +
-                            rootCause.getMessage();
-                } else {
-                    detailedMessage = rootCause.getMessage();
-                }
-            }
-        }
-
         APIResponse<Void> response = new APIResponse<>(false, message, null,
                 Collections.singletonList(detailedMessage));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
