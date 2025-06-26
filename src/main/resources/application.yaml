@@ -2,15 +2,15 @@ spring:
   application:
     name: rifa-sims-server
   datasource:
-    url: jdbc:postgresql://${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${DB_URL:localhost:5432/rifa_sims_dev_db}
+    username: ${DB_USERNAME:localuser}
+    password: ${DB_PASSWORD:rahasia}
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-              dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   web:
     cors:
       origin: "*"
@@ -36,8 +36,8 @@ spring:
       enabled: true
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION}
+  secret: ${JWT_SECRET:rahasia-rifa-dev}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 telegram:
   bot:

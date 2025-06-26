@@ -1,0 +1,27 @@
+# src/main/resources/application-prod.yaml
+spring:
+  devtools:
+    restart:
+      enabled: false
+  web:
+    cors:
+      origin: "https://rifa-sims.my.id"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        connection:
+          pool_size: 5
+        jdbc:
+          batch_size: 10
+
+logging:
+  level:
+    io.github.irfnhanif.rifasims: INFO
+  file:
+    name: logs/application.log
+  logback:
+    rollingpolicy:
+      max-size: 10MB
+      max-history: 7
