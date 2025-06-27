@@ -28,7 +28,6 @@ class ScanItemRecommenderTest {
     void globalSetUp() {
         recommender = new ScanItemRecommender();
         resultsSummary = new EnumMap<>(TestOutcome.class);
-        // Inisialisasi map
         for (TestOutcome outcome : TestOutcome.values()) {
             resultsSummary.put(outcome, 0);
         }
@@ -88,7 +87,7 @@ class ScanItemRecommenderTest {
         resultsSummary.merge(outcome, 1, Integer::sum);
     }
 
-    // --- MULAI DEFINISIKAN SKENARIO-SKENARIO ANDA DI SINI ---
+    // --- DEFINISI SKENARIO PENGUJIAN KOMPARATIF ---
 
     @Test
     void scenario1_MostRecentAndFrequentIsTheSame() {
