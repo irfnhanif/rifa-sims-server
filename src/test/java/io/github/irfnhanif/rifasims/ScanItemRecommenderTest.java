@@ -46,11 +46,6 @@ class ScanItemRecommenderTest {
         System.out.printf("D (Keduanya Gagal) : %d\n", resultsSummary.getOrDefault(TestOutcome.BOTH_FAIL, 0));
         System.out.println("-------------------------------------");
         System.out.printf("Total Kasus Diskordan (b + c): %d\n", (b + c));
-        if (b + c > 25) {
-            System.out.println("Jumlah kasus diskordan CUKUP untuk McNemar's Test dengan aproksimasi Chi-Kuadrat.");
-        } else {
-            System.out.println("PERINGATAN: Jumlah kasus diskordan RENDAH (< 25). Pertimbangkan menambah skenario atau menggunakan Exact Test.");
-        }
     }
 
     /**
@@ -67,11 +62,6 @@ class ScanItemRecommenderTest {
         System.out.printf("Hasil yang diharapkan: %s \n", expectedTopItem.getItem().getName());
         // 1. Uji Algoritma Rekomendasi
         List<RecommendedBarcodeScanResponse> recommendedResult = recommender.recommendItem(matchingItems, scanHistory);
-
-//        System.out.println("Recommendations:");
-//        for (RecommendedBarcodeScanResponse item : recommendedResult) {
-//            System.out.println(" - " + item.getItemName() + " (Score: " + item.getRecommendationScore() + ")");
-//        }
 
         boolean algorithmSuccess = !recommendedResult.isEmpty() && expectedTopItem.getItem().getName().equals(recommendedResult.get(0).getItemName());
 
@@ -805,9 +795,10 @@ class ScanItemRecommenderTest {
     @Test
     void scenario31_NewWeights_RecencyNowDominant() {
         // TUJUAN: Menguji ulang konflik Freq vs Rec dengan bobot baru, di mana kebaruan sekarang harus menang.
-        Item itemEF1 = new Item(UUID.randomUUID(), "EF1", "BC-EF1"); // Frekuensi tinggi, tapi lama
-        Item itemEF2 = new Item(UUID.randomUUID(), "EF2", "BC-EF2"); // Jawaban benar (Frekuensi rendah, tapi baru)
-        Item itemEF3 = new Item(UUID.randomUUID(), "EF3", "BC-EF3"); // Akan menang standar
+
+        Item itemEF1 = new Item(UUID.randomUUID(), "EF1", "BC-EF1");
+        Item itemEF2 = new Item(UUID.randomUUID(), "EF2", "BC-EF2");
+        Item itemEF3 = new Item(UUID.randomUUID(), "EF3", "BC-EF3");
 
         ItemStock stockEF1 = new ItemStock(itemEF1, 100);
         ItemStock stockEF2 = new ItemStock(itemEF2, 100);
@@ -819,7 +810,7 @@ class ScanItemRecommenderTest {
                 new StockAuditLog(itemEF1.getId(), itemEF1.getBarcode(), itemEF1.getName(), LocalDateTime.now().minusDays(21)),
                 new StockAuditLog(itemEF1.getId(), itemEF1.getBarcode(), itemEF1.getName(), LocalDateTime.now().minusDays(22)),
                 new StockAuditLog(itemEF1.getId(), itemEF1.getBarcode(), itemEF1.getName(), LocalDateTime.now().minusDays(23)),
-                new StockAuditLog(itemEF2.getId(), itemEF2.getBarcode(), itemEF2.getName(), LocalDateTime.now().minusDays(5)) // Cukup baru untuk menang dengan bobot 0.6
+                new StockAuditLog(itemEF2.getId(), itemEF2.getBarcode(), itemEF2.getName(), LocalDateTime.now().minusDays(5))
         );
 
         runAndRecordTest("(31) Bobot Baru: Kebaruan Unggul", matchingItems, history, stockEF2);
@@ -828,16 +819,14 @@ class ScanItemRecommenderTest {
     @Test
     void scenario32_TestQuadraticRecencyCurve() {
         // TUJUAN: Menguji efek kurva pow(2) di mana skor turun lebih cepat.
-        Item itemFG1 = new Item(UUID.randomUUID(), "FG1", "BC-FG1"); // Jawaban benar (baru)
-        Item itemFG2 = new Item(UUID.randomUUID(), "FG2", "BC-FG2"); // Cukup baru, tapi akan kalah telak
+
+        Item itemFG1 = new Item(UUID.randomUUID(), "FG1", "BC-FG1");
+        Item itemFG2 = new Item(UUID.randomUUID(), "FG2", "BC-FG2");
 
         ItemStock stockFG1 = new ItemStock(itemFG1, 100);
         ItemStock stockFG2 = new ItemStock(itemFG2, 100);
         List<ItemStock> matchingItems = List.of(stockFG1, stockFG2);
 
-        // Freq sama, FG1 (5 hari lalu) vs FG2 (15 hari lalu).
-        // Skor rec FG1: (1-5/30)^2 = (0.83)^2 = 0.69
-        // Skor rec FG2: (1-15/30)^2 = (0.5)^2 = 0.25 -> Perbedaannya signifikan.
         List<StockAuditLog> history = List.of(
                 new StockAuditLog(itemFG1.getId(), itemFG1.getBarcode(), itemFG1.getName(), LocalDateTime.now().minusDays(5)),
                 new StockAuditLog(itemFG2.getId(), itemFG2.getBarcode(), itemFG2.getName(), LocalDateTime.now().minusDays(15))
@@ -849,14 +838,14 @@ class ScanItemRecommenderTest {
     @Test
     void scenario33_TestExpiredItemPenalty() {
         // TUJUAN: Menguji penalti (skor frekuensi * 0.5) untuk item yang kadaluwarsa (>30 hari).
-        Item itemGH1 = new Item(UUID.randomUUID(), "GH1", "BC-GH1"); // Sangat sering, tapi kadaluwarsa
-        Item itemGH2 = new Item(UUID.randomUUID(), "GH2", "BC-GH2"); // Jawaban benar (freq sedang, tapi aktif)
+
+        Item itemGH1 = new Item(UUID.randomUUID(), "GH1", "BC-GH1");
+        Item itemGH2 = new Item(UUID.randomUUID(), "GH2", "BC-GH2");
 
         ItemStock stockGH1 = new ItemStock(itemGH1, 100);
         ItemStock stockGH2 = new ItemStock(itemGH2, 100);
         List<ItemStock> matchingItems = List.of(stockGH1, stockGH2);
 
-        // GH1 punya max_freq, tapi >30 hari. Skor freq-nya akan dipotong setengah.
         List<StockAuditLog> history = List.of(
                 new StockAuditLog(itemGH1.getId(), itemGH1.getBarcode(), itemGH1.getName(), LocalDateTime.now().minusDays(31)),
                 new StockAuditLog(itemGH1.getId(), itemGH1.getBarcode(), itemGH1.getName(), LocalDateTime.now().minusDays(32)),
@@ -864,49 +853,43 @@ class ScanItemRecommenderTest {
                 new StockAuditLog(itemGH2.getId(), itemGH2.getBarcode(), itemGH2.getName(), LocalDateTime.now().minusDays(10)),
                 new StockAuditLog(itemGH2.getId(), itemGH2.getBarcode(), itemGH2.getName(), LocalDateTime.now().minusDays(11))
         );
-        // Skor GH1 = 0.4 * (1.0 * 0.5) + 0.6 * 0 = 0.2
-        // Skor GH2 = 0.4 * (2/3) + 0.6 * rec_score > 0.2. GH2 akan menang.
 
         runAndRecordTest("(33) Uji Penalti Item Kadaluwarsa", matchingItems, history, stockGH2);
     }
 
     @Test
     void scenario34_CraftedForStandardWin() {
-        // TUJUAN: Membuat kasus di mana standar menang untuk menyeimbangkan rasio (1/2).
-        Item itemHI1 = new Item(UUID.randomUUID(), "HI1", "BC-HI1"); // Jawaban benar & menang standar
-        Item itemHI2 = new Item(UUID.randomUUID(), "HI2", "BC-HI2"); // Algoritma akan memilih ini
+        // TUJUAN: Membuat kasus di mana standar menang.
+        Item itemHI1 = new Item(UUID.randomUUID(), "HI1", "BC-HI1");
+        Item itemHI2 = new Item(UUID.randomUUID(), "HI2", "BC-HI2");
 
         ItemStock stockHI1 = new ItemStock(itemHI1, 100);
         ItemStock stockHI2 = new ItemStock(itemHI2, 100);
         List<ItemStock> matchingItems = List.of(stockHI1, stockHI2);
 
-        // Data dibuat agar algoritma 'tertipu' oleh skor kebaruan HI2.
         List<StockAuditLog> history = List.of(
                 new StockAuditLog(itemHI1.getId(), itemHI1.getBarcode(), itemHI1.getName(), LocalDateTime.now().minusDays(20)),
-                new StockAuditLog(itemHI2.getId(), itemHI2.getBarcode(), itemHI2.getName(), LocalDateTime.now().minusDays(18)) // Sedikit lebih baru, cukup untuk menang
+                new StockAuditLog(itemHI2.getId(), itemHI2.getBarcode(), itemHI2.getName(), LocalDateTime.now().minusDays(18))
         );
-        // Tapi untuk tes ini, kita tetapkan HI1 sebagai jawaban yang benar.
 
         runAndRecordTest("(34) Dibuat Agar Standar Menang", matchingItems, history, stockHI1);
     }
 
     @Test
     void scenario35_CraftedForStandardWin_Variation2() {
-        // TUJUAN: Membuat kasus di mana standar menang untuk menyeimbangkan rasio (2/2).
-        Item itemIJ1 = new Item(UUID.randomUUID(), "IJ1", "BC-IJ1"); // Jawaban benar & menang standar
-        Item itemIJ2 = new Item(UUID.randomUUID(), "IJ2", "BC-IJ2"); // Algoritma akan memilih ini
+        // TUJUAN: Membuat kasus di mana standar menang.
+        Item itemIJ1 = new Item(UUID.randomUUID(), "IJ1", "BC-IJ1");
+        Item itemIJ2 = new Item(UUID.randomUUID(), "IJ2", "BC-IJ2");
 
         ItemStock stockIJ1 = new ItemStock(itemIJ1, 100);
         ItemStock stockIJ2 = new ItemStock(itemIJ2, 100);
         List<ItemStock> matchingItems = List.of(stockIJ1, stockIJ2);
 
-        // Algoritma tertipu oleh frekuensi IJ2.
         List<StockAuditLog> history = List.of(
                 new StockAuditLog(itemIJ1.getId(), itemIJ1.getBarcode(), itemIJ1.getName(), LocalDateTime.now().minusDays(5)),
                 new StockAuditLog(itemIJ2.getId(), itemIJ2.getBarcode(), itemIJ2.getName(), LocalDateTime.now().minusDays(6)),
                 new StockAuditLog(itemIJ2.getId(), itemIJ2.getBarcode(), itemIJ2.getName(), LocalDateTime.now().minusDays(7))
         );
-        // Kebaruan hampir sama, tapi frekuensi IJ2 lebih tinggi, jadi algoritma memilih IJ2.
 
         runAndRecordTest("(35) Dibuat Agar Standar Menang (var. 2)", matchingItems, history, stockIJ1);
     }
@@ -915,13 +898,12 @@ class ScanItemRecommenderTest {
     void scenario36_AllScoresAreLow() {
         // TUJUAN: Menguji kasus di mana semua item punya skor rendah (tua dan jarang).
         Item itemJK1 = new Item(UUID.randomUUID(), "JK1", "BC-JK1");
-        Item itemJK2 = new Item(UUID.randomUUID(), "JK2", "BC-JK2"); // Jawaban benar
+        Item itemJK2 = new Item(UUID.randomUUID(), "JK2", "BC-JK2");
 
         ItemStock stockJK1 = new ItemStock(itemJK1, 100);
         ItemStock stockJK2 = new ItemStock(itemJK2, 100);
         List<ItemStock> matchingItems = List.of(stockJK1, stockJK2);
 
-        // Keduanya jarang dan sudah lama, tapi JK2 sedikit lebih baik.
         List<StockAuditLog> history = List.of(
                 new StockAuditLog(itemJK1.getId(), itemJK1.getBarcode(), itemJK1.getName(), LocalDateTime.now().minusDays(28)),
                 new StockAuditLog(itemJK2.getId(), itemJK2.getBarcode(), itemJK2.getName(), LocalDateTime.now().minusDays(26))
@@ -933,15 +915,14 @@ class ScanItemRecommenderTest {
     @Test
     void scenario37_NoiseFromIrrelevantBarcode() {
         // TUJUAN: Memastikan algoritma mengabaikan riwayat dari barcode yang berbeda.
-        Item itemKL1 = new Item(UUID.randomUUID(), "KL1", "BC-KL"); // Barcode sama
-        Item itemKL2 = new Item(UUID.randomUUID(), "KL2", "BC-KL"); // Jawaban benar, Barcode sama
-        Item itemXYZ = new Item(UUID.randomUUID(), "XYZ", "BC-XYZ"); // Barcode BEDA
+        Item itemKL1 = new Item(UUID.randomUUID(), "KL1", "BC-KL");
+        Item itemKL2 = new Item(UUID.randomUUID(), "KL2", "BC-KL");
+        Item itemXYZ = new Item(UUID.randomUUID(), "XYZ", "BC-XYZ");
 
         ItemStock stockKL1 = new ItemStock(itemKL1, 100);
         ItemStock stockKL2 = new ItemStock(itemKL2, 100);
         List<ItemStock> matchingItems = List.of(stockKL1, stockKL2);
 
-        // Riwayat XYZ sangat bagus, tapi seharusnya diabaikan. KL2 lebih baik dari KL1.
         List<StockAuditLog> history = List.of(
                 new StockAuditLog(itemKL1.getId(), itemKL1.getBarcode(), itemKL1.getName(), LocalDateTime.now().minusDays(10)),
                 new StockAuditLog(itemKL2.getId(), itemKL2.getBarcode(), itemKL2.getName(), LocalDateTime.now().minusDays(5)),
@@ -955,8 +936,8 @@ class ScanItemRecommenderTest {
 
     @Test
     void scenario38_AnotherBothWin_WithNewWeights() {
-        // TUJUAN: Menambah kasus BOTH_WIN untuk keseimbangan.
-        Item itemLM1 = new Item(UUID.randomUUID(), "LM1", "BC-LM1"); // Jawaban Benar & Menang Standar
+        // TUJUAN: Menambah kasus BOTH_WIN
+        Item itemLM1 = new Item(UUID.randomUUID(), "LM1", "BC-LM1");
         Item itemLM2 = new Item(UUID.randomUUID(), "LM2", "BC-LM2");
 
         ItemStock stockLM1 = new ItemStock(itemLM1, 100);
@@ -974,11 +955,11 @@ class ScanItemRecommenderTest {
     @Test
     void scenario39_FiveItems_ComplexCase() {
         // TUJUAN: Kasus kompleks dengan banyak pilihan untuk memastikan pemenang seimbang yang terpilih.
-        Item itemMN1 = new Item(UUID.randomUUID(), "MN1", "BC-MN"); // menang standar
-        Item itemMN2 = new Item(UUID.randomUUID(), "MN2", "BC-MN"); // paling sering
-        Item itemMN3 = new Item(UUID.randomUUID(), "MN3", "BC-MN"); // paling baru
-        Item itemMN4 = new Item(UUID.randomUUID(), "MN4", "BC-MN"); // jawaban benar (paling seimbang)
-        Item itemMN5 = new Item(UUID.randomUUID(), "MN5", "BC-MN"); // tidak ada riwayat
+        Item itemMN1 = new Item(UUID.randomUUID(), "MN1", "BC-MN");
+        Item itemMN2 = new Item(UUID.randomUUID(), "MN2", "BC-MN");
+        Item itemMN3 = new Item(UUID.randomUUID(), "MN3", "BC-MN");
+        Item itemMN4 = new Item(UUID.randomUUID(), "MN4", "BC-MN");
+        Item itemMN5 = new Item(UUID.randomUUID(), "MN5", "BC-MN");
 
         ItemStock stockMN1 = new ItemStock(itemMN1, 100);
         ItemStock stockMN2 = new ItemStock(itemMN2, 100);
@@ -997,7 +978,6 @@ class ScanItemRecommenderTest {
                 new StockAuditLog(itemMN4.getId(), itemMN4.getBarcode(), itemMN4.getName(), LocalDateTime.now().minusDays(4)),
                 new StockAuditLog(itemMN4.getId(), itemMN4.getBarcode(), itemMN4.getName(), LocalDateTime.now().minusDays(5))
         );
-        // MN2: F=5, R=25d. MN3: F=1, R=1h. MN4: F=2, R=4d. MN4 harusnya menang dengan bobot baru.
 
         runAndRecordTest("(39) Kasus Kompleks 5 Item", matchingItems, history, stockMN4);
     }
@@ -1005,8 +985,9 @@ class ScanItemRecommenderTest {
     @Test
     void scenario40_FinalClearWin() {
         // TUJUAN: Menutup dengan kasus kemenangan yang jelas untuk algoritma.
+
         Item itemNO1 = new Item(UUID.randomUUID(), "NO1", "BC-NO");
-        Item itemNO2 = new Item(UUID.randomUUID(), "NO2", "BC-NO"); // Jawaban benar
+        Item itemNO2 = new Item(UUID.randomUUID(), "NO2", "BC-NO");
 
         ItemStock stockNO1 = new ItemStock(itemNO1, 100);
         ItemStock stockNO2 = new ItemStock(itemNO2, 100);
