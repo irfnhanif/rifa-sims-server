@@ -15,7 +15,7 @@ import java.util.*;
 class ScanItemRecommenderTest {
     private ScanItemRecommender recommender;
     private Map<TestOutcome, Integer> resultsSummary;
-    // Enum untuk hasil perbandingan yang lebih deskriptif
+
     enum TestOutcome {
         ALGORITHM_WINS,   // Algoritma Sukses, Standar Gagal (b)
         STANDARD_WINS,    // Algoritma Gagal, Standar Sukses (c)
@@ -51,9 +51,9 @@ class ScanItemRecommenderTest {
      * Metode inti yang diekstrak untuk menjalankan satu skenario uji.
      *
      * @param scenarioName Nama skenario untuk logging.
-     * @param matchingItems Daftar item yang cocok dengan barcode.
+     * @param matchingItems Daftar barang yang cocok dengan barcode.
      * @param scanHistory Riwayat pindaian.
-     * @param expectedTopItem Item yang seharusnya menjadi rekomendasi teratas.
+     * @param expectedTopItem Barang yang seharusnya menjadi rekomendasi teratas.
      */
 
     private void runAndRecordTest(String scenarioName, List<ItemStock> matchingItems, List<StockAuditLog> scanHistory, ItemStock expectedTopItem) {
